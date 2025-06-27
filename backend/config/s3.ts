@@ -1,0 +1,1 @@
+//S3 setup for image object store
