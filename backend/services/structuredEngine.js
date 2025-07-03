@@ -1,5 +1,4 @@
 //Core structured engine logic (Word2Vec, similiarty)
-//Core structured engine logic (Word2Vec, similiarty)
 import keywordExtractor from "keyword-extractor";
 
 
