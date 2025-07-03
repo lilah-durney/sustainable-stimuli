@@ -76,4 +76,3 @@ router.post("/upload", upload.single("sketchFile"), async (req,res) => {
 });
 
 export default router;
-
