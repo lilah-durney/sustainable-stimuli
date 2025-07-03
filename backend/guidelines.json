@@ -1,0 +1,382 @@
+[
+  {
+    "id": 1,
+    "guideline": "Specify renewable and abundant resources",
+    "category": "Maximize availability of resources"
+  },
+  {
+    "id": 2,
+    "guideline": "Specify recyclable or recycled resources",
+    "category": "Maximize availability of resources"
+  },
+  {
+    "id": 3,
+    "guideline": "Layer recycled and virgin material where virgin material is necessary",
+    "category": "Maximize availability of resources"
+  },
+  {
+    "id": 4,
+    "guideline": "Employ common and remanufactured components across models",
+    "category": "Maximize availability of resources"
+  },
+  {
+    "id": 5,
+    "guideline": "Specify compatible materials and fasteners for recycling",
+    "category": "Maximize availability of resources"
+  },
+  {
+    "id": 6,
+    "guideline": "Minimize the variety of materials in the product and its subassemblies",
+    "category": "Maximize availability of resources"
+  },
+  {
+    "id": 7,
+    "guideline": "Contain pollutants and hazardous materials for reuse or processing",
+    "category": "Maximize healthy inputs and outputs"
+  },
+  {
+    "id": 8,
+    "guideline": "Specify environmentally benign materials",
+    "category": "Maximize healthy inputs and outputs"
+  },
+  {
+    "id": 9,
+    "guideline": "Create biodegradable outputs",
+    "category": "Maximize healthy inputs and outputs"
+  },
+  {
+    "id": 10,
+    "guideline": "Specify resources with low emissions",
+    "category": "Maximize healthy inputs and outputs"
+  },
+  {
+    "id": 11,
+    "guideline": "Include labels and instructions for safe handling of toxic materials",
+    "category": "Maximize healthy inputs and outputs"
+  },
+  {
+    "id": 12,
+    "guideline": "Concentrate pollutants and hazardous materials for easy removal and treatment",
+    "category": "Maximize healthy inputs and outputs"
+  },
+  {
+    "id": 13,
+    "guideline": "Recover emissions and outputs",
+    "category": "Maximize healthy inputs and outputs"
+  },
+  {
+    "id": 14,
+    "guideline": "Replace the functions and appeals of packaging through the product\u2019s form",
+    "category": "Minimize use of resources in production and transportation phases"
+  },
+  {
+    "id": 15,
+    "guideline": "Employ folding, nesting, or disassembly to ship and store products in a compact state",
+    "category": "Minimize use of resources in production and transportation phases"
+  },
+  {
+    "id": 16,
+    "guideline": "Apply structural techniques and materials that minimize the total volume of material",
+    "category": "Minimize use of resources in production and transportation phases"
+  },
+  {
+    "id": 17,
+    "guideline": "Specify lightweight materials and components",
+    "category": "Minimize use of resources in production and transportation phases"
+  },
+  {
+    "id": 18,
+    "guideline": "Structure the product to avoid rejects and minimize material waste in production",
+    "category": "Minimize use of resources in production and transportation phases"
+  },
+  {
+    "id": 19,
+    "guideline": "Minimize the number of components",
+    "category": "Minimize use of resources in production and transportation phases"
+  },
+  {
+    "id": 20,
+    "guideline": "Specify materials with low-intensity production and agriculture",
+    "category": "Minimize use of resources in production and transportation phases"
+  },
+  {
+    "id": 21,
+    "guideline": "Specify materials that do not require additional surface treatment of inks",
+    "category": "Minimize use of resources in production and transportation phases"
+  },
+  {
+    "id": 22,
+    "guideline": "Exploit intrinsic properties of materials",
+    "category": "Minimize use of resources in production and transportation phases"
+  },
+  {
+    "id": 23,
+    "guideline": "Specify clean production processes within the supply chain",
+    "category": "Minimize use of resources in production and transportation phases"
+  },
+  {
+    "id": 24,
+    "guideline": "Employ as few manufacturing steps as possible",
+    "category": "Minimize use of resources in production and transportation phases"
+  },
+  {
+    "id": 25,
+    "guideline": "Source from suppliers with low transportation impacts",
+    "category": "Minimize use of resources in production and transportation phases"
+  },
+  {
+    "id": 26,
+    "guideline": "Implement reusable supplies",
+    "category": "Minimize consumption of resources during operation"
+  },
+  {
+    "id": 27,
+    "guideline": "Incorporate timed, noticeable incentives into operation",
+    "category": "Minimize consumption of resources during operation"
+  },
+  {
+    "id": 28,
+    "guideline": "Minimize energy and material loss",
+    "category": "Minimize consumption of resources during operation"
+  },
+  {
+    "id": 29,
+    "guideline": "Minimize the volume and weight of materials to which energy is transferred",
+    "category": "Minimize consumption of resources during operation"
+  },
+  {
+    "id": 30,
+    "guideline": "Optimize the rate and duration of resource use to the task",
+    "category": "Minimize consumption of resources during operation"
+  },
+  {
+    "id": 31,
+    "guideline": "Provide discrete quantities of resources",
+    "category": "Minimize consumption of resources during operation"
+  },
+  {
+    "id": 32,
+    "guideline": "Provide automatic or manual tuning capabilities",
+    "category": "Minimize consumption of resources during operation"
+  },
+  {
+    "id": 33,
+    "guideline": "Indicate the current state of processes",
+    "category": "Minimize consumption of resources during operation"
+  },
+  {
+    "id": 34,
+    "guideline": "Create separate modules for tasks with different ideal solutions",
+    "category": "Minimize consumption of resources during operation"
+  },
+  {
+    "id": 35,
+    "guideline": "Support complex decision-making by the user",
+    "category": "Minimize consumption of resources during operation"
+  },
+  {
+    "id": 36,
+    "guideline": "Specify best-in-class efficiency components",
+    "category": "Minimize consumption of resources during operation"
+  },
+  {
+    "id": 37,
+    "guideline": "Incorporate partial operation to disengage subsystems that are not in use",
+    "category": "Minimize consumption of resources during operation"
+  },
+  {
+    "id": 38,
+    "guideline": "Minimize start up and power down time",
+    "category": "Maximize technical and esthetic life of the product and components"
+  },
+  {
+    "id": 39,
+    "guideline": "Interconnect available flows of energy and materials",
+    "category": "Maximize technical and esthetic life of the product and components"
+  },
+  {
+    "id": 40,
+    "guideline": "Maximize system efficiency for a range of real world conditions",
+    "category": "Maximize technical and esthetic life of the product and components"
+  },
+  {
+    "id": 41,
+    "guideline": "Create shared or service systems that dematerialize",
+    "category": "Maximize technical and esthetic life of the product and components"
+  },
+  {
+    "id": 42,
+    "guideline": "Harmonize the operation with users\u2019 daily activities within the product and its environment",
+    "category": "Maximize technical and esthetic life of the product and components"
+  },
+  {
+    "id": 43,
+    "guideline": "Permit users to turn off systems in part or whole",
+    "category": "Maximize technical and esthetic life of the product and components"
+  },
+  {
+    "id": 44,
+    "guideline": "Reveal how much resource is being consumed",
+    "category": "Maximize technical and esthetic life of the product and components"
+  },
+  {
+    "id": 45,
+    "guideline": "Incorporate intuitive controls for resource-saving features",
+    "category": "Maximize technical and esthetic life of the product and components"
+  },
+  {
+    "id": 46,
+    "guideline": "Incorporate features that prevent or discourage waste of materials by the user",
+    "category": "Maximize technical and esthetic life of the product and components"
+  },
+  {
+    "id": 47,
+    "guideline": "Automatically reset the product to its most efficient setting",
+    "category": "Maximize technical and esthetic life of the product and components"
+  },
+  {
+    "id": 48,
+    "guideline": "Employ transformation or multifunctionality",
+    "category": "Maximize technical and esthetic life of the product and components"
+  },
+  {
+    "id": 49,
+    "guideline": "Reutilize resource intensive components",
+    "category": "Maximize technical and esthetic life of the product and components"
+  },
+  {
+    "id": 50,
+    "guideline": "Plan for ongoing efficiency improvements",
+    "category": "Maximize technical and esthetic life of the product and components"
+  },
+  {
+    "id": 51,
+    "guideline": "Improve esthetics and functionality to ensure that the esthetic life is equal to the technical life",
+    "category": "Maximize technical and esthetic life of the product and components"
+  },
+  {
+    "id": 52,
+    "guideline": "Minimize required maintenance",
+    "category": "Maximize technical and esthetic life of the product and components"
+  },
+  {
+    "id": 53,
+    "guideline": "Protect products from dirt, corrosion, and wear",
+    "category": "Maximize technical and esthetic life of the product and components"
+  },
+  {
+    "id": 54,
+    "guideline": "Indicate through the product how parts are maintained",
+    "category": "Maximize technical and esthetic life of the product and components"
+  },
+  {
+    "id": 55,
+    "guideline": "Minimize the number of service and inspection tools",
+    "category": "Maximize technical and esthetic life of the product and components"
+  },
+  {
+    "id": 56,
+    "guideline": "Facilitate testing of components",
+    "category": "Maximize technical and esthetic life of the product and components"
+  },
+  {
+    "id": 57,
+    "guideline": "Allow for repetitive dis- and re-assembly",
+    "category": "Maximize technical and esthetic life of the product and components"
+  },
+  {
+    "id": 58,
+    "guideline": "Increase the value with age",
+    "category": "Maximize technical and esthetic life of the product and components"
+  },
+  {
+    "id": 59,
+    "guideline": "Communicate durability and reliability through the form",
+    "category": "Maximize technical and esthetic life of the product and components"
+  },
+  {
+    "id": 60,
+    "guideline": "Make wear detectable for repair and upgrade",
+    "category": "Facilitate upgrading and reuse of components"
+  },
+  {
+    "id": 61,
+    "guideline": "Indicate through the product how it should be opened",
+    "category": "Facilitate upgrading and reuse of components"
+  },
+  {
+    "id": 62,
+    "guideline": "Ensure that joints and fasteners are easily accessible",
+    "category": "Facilitate upgrading and reuse of components"
+  },
+  {
+    "id": 63,
+    "guideline": "Facilitate upgrading and reuse of components that experience rapid change",
+    "category": "Facilitate upgrading and reuse of components"
+  },
+  {
+    "id": 64,
+    "guideline": "Maintain stability and part placement during disassembly/assembly",
+    "category": "Facilitate upgrading and reuse of components"
+  },
+  {
+    "id": 65,
+    "guideline": "Minimize the number of tools required for disassembly/assembly",
+    "category": "Facilitate upgrading and reuse of components"
+  },
+  {
+    "id": 66,
+    "guideline": "Minimize destructive disassembly and its effects",
+    "category": "Facilitate upgrading and reuse of components"
+  },
+  {
+    "id": 67,
+    "guideline": "Ensure reusable parts can be cleaned easily and without damage",
+    "category": "Facilitate upgrading and reuse of components"
+  },
+  {
+    "id": 68,
+    "guideline": "Make incompatible materials easily separated",
+    "category": "Facilitate upgrading and reuse of components"
+  },
+  {
+    "id": 69,
+    "guideline": "Make component interfaces simply and reversibly separable",
+    "category": "Facilitate upgrading and reuse of components"
+  },
+  {
+    "id": 70,
+    "guideline": "Organize in hierarchical modules by esthetic, repair, and end-of-life protocol",
+    "category": "Facilitate upgrading and reuse of components"
+  },
+  {
+    "id": 71,
+    "guideline": "Implement reusable/swappable platforms, modules, and components",
+    "category": "Facilitate upgrading and reuse of components"
+  },
+  {
+    "id": 72,
+    "guideline": "Specify adhesives, labels, surface coatings, and pigments that are compatible with cleaning during and after the useful life",
+    "category": "Facilitate upgrading and reuse of components"
+  },
+  {
+    "id": 73,
+    "guideline": "Employ one disassembly/assembly direction without reorientation",
+    "category": "Facilitate upgrading and reuse of components"
+  },
+  {
+    "id": 74,
+    "guideline": "Minimize the number and length of operations for detachment",
+    "category": "Facilitate upgrading and reuse of components"
+  },
+  {
+    "id": 75,
+    "guideline": "Mark materials in molds with types and reutilization protocol",
+    "category": "Facilitate upgrading and reuse of components"
+  },
+  {
+    "id": 76,
+    "guideline": "Use a shallow or open structure for easy access to subassemblies",
+    "category": "Facilitate upgrading and reuse of components"
+  }
+]
