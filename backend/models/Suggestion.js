@@ -11,6 +11,7 @@ const SuggestionSchema = new Schema({
   searchType: { type: String, required: true }, // "genAI" or "structured"
   output: {
     guideline: String, //for structured
+    extractedWords: [String], //for structured
     suggestion: String, //for genAI
     rationale: String,
     category: String,
