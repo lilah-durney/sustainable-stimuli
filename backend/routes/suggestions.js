@@ -3,15 +3,12 @@ import express from "express";
 import Suggestion from "../models/Suggestion.js";
 import {v4 as uuidv4} from "uuid";
 import multer from "multer";
+import { processStructured } from "../services/structuredEngine.js";
 
 const upload = multer({storage: multer.memoryStorage()});
 const router = express.Router()
 
 
-//Temp placeholders for now
-async function processStructured(inputDoc) {
-  return {guideline:"some guideline"};
-}
 
 async function processGenAI(inputDoc) {
   return {guideline: "some guideline"};
@@ -23,7 +20,6 @@ router.post("/upload", upload.single("sketchFile"), async (req,res) => {
   console.log("File:", req.file)
   
   try {
-    const suggestionId = uuidv4(); //unique Id generated for tracking
     const {
       designBrief, 
       semanticDistance,
@@ -34,8 +30,8 @@ router.post("/upload", upload.single("sketchFile"), async (req,res) => {
     } = req.body
 
     const outputTypes = {
-      Text: req.body["outputTypes[Text]" === "true"],
-      Image: req.body["outputTypes[Image]" === "true"],
+      Text: req.body["outputTypes[Text]"] === "true",
+      Image: req.body["outputTypes[Image]"] === "true",
     };
 
 
@@ -80,4 +76,3 @@ router.post("/upload", upload.single("sketchFile"), async (req,res) => {
 });
 
 export default router;
-
