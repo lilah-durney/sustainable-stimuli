@@ -2,26 +2,78 @@
 import express from "express";
 import Suggestion from "../models/Suggestion.js";
 import {v4 as uuidv4} from "uuid";
+import multer from "multer";
+import { processStructured } from "../services/structuredEngine.js";
 
-const router = express.Router();
+const upload = multer({storage: multer.memoryStorage()});
+const router = express.Router()
 
-router.post("/structured", async (req,res) => {
+
+
+async function processGenAI(inputDoc) {
+  return {guideline: "some guideline"};
+}
+
+
+router.post("/upload", upload.single("sketchFile"), async (req,res) => {
+  console.log("Body:", req.body)
+  console.log("File:", req.file)
+  
   try {
-    const suggestionId = uuidv4(); //unique Id generated for tracking
-    const suggestion = new Suggestion({
-      ...req.body,
-      suggestionId,
-      createdAt: new Date(),
+    const {
+      designBrief, 
+      semanticDistance,
+      visualSimilarity,
+      conceptualSimilarity,
+      sustainableGoal,
+      searchType
+    } = req.body
+
+    const outputTypes = {
+      Text: req.body["outputTypes[Text]"] === "true",
+      Image: req.body["outputTypes[Image]"] === "true",
+    };
+
+
+    //TODO: handle image saving
+    const sketchFile = req.file;
+
+    const searchInput = new Suggestion({
+      designBrief,
+      semanticDistance, 
+      visualSimilarity,
+      conceptualSimilarity,
+      sustainableGoal,
+      searchType,
+      outputTypes,
+      // TODO: save sketchUrl once I've uploaded the image to storage
+      // sketchUrl,
     });
 
     //Saves new document to database
-    await suggestion.save()
-    //Sending the document to the frontend
-    res.status(200).json({suggestionId, output: suggestion.output});
+    await searchInput.save()
+
+    //Branch off processing logic based on searchType
+    //TODO: processStructured/GenAI functions will be located in services/ folder
+    let processedOutput = {};
+    if (searchType === "Structured") {
+      processedOutput = await processStructured(searchInput);
+    } else {
+      processedOutput = await processGenAI(searchInput);
+    }
+
+    //Updates output to database.
+   searchInput.output = processedOutput;
+   await searchInput.save()
+   console.log("Saved suggestion:", searchInput)
+    
+    //Sending the output to the frontend
+    res.status(200).json({output: processedOutput});
   } catch(error) {
-    console.error("Error saving structured suggestion:", error)
-    res.status(500).json({error: "Failed to save suggestion"})
+    console.error("Error saving search:", error)
+    res.status(500).json({error: "Failed to save search"})
   }
 });
 
 export default router;
+
