@@ -10,69 +10,90 @@ const router = express.Router()
 
 
 
+
+
+
 async function processGenAI(inputDoc) {
-  return {guideline: "some guideline"};
+ return {guideline: "some guideline"};
 }
 
 
+
+
 router.post("/upload", upload.single("sketchFile"), async (req,res) => {
-  console.log("Body:", req.body)
-  console.log("File:", req.file)
-  
+ console.log("Body:", req.body)
+ console.log("File:", req.file)
   try {
-    const {
-      designBrief, 
-      semanticDistance,
-      visualSimilarity,
-      conceptualSimilarity,
-      sustainableGoal,
-      searchType
-    } = req.body
-
-    const outputTypes = {
-      Text: req.body["outputTypes[Text]"] === "true",
-      Image: req.body["outputTypes[Image]"] === "true",
-    };
+   const {
+     designBrief,
+     semanticDistance,
+     visualSimilarity,
+     conceptualSimilarity,
+     sustainableGoal,
+     searchType
+   } = req.body
 
 
-    //TODO: handle image saving
-    const sketchFile = req.file;
+   const outputTypes = {
+     Text: req.body["outputTypes[Text]"] === "true",
+     Image: req.body["outputTypes[Image]"] === "true",
+   };
 
-    const searchInput = new Suggestion({
-      designBrief,
-      semanticDistance, 
-      visualSimilarity,
-      conceptualSimilarity,
-      sustainableGoal,
-      searchType,
-      outputTypes,
-      // TODO: save sketchUrl once I've uploaded the image to storage
-      // sketchUrl,
-    });
 
-    //Saves new document to database
-    await searchInput.save()
 
-    //Branch off processing logic based on searchType
-    //TODO: processStructured/GenAI functions will be located in services/ folder
-    let processedOutput = {};
-    if (searchType === "Structured") {
-      processedOutput = await processStructured(searchInput);
-    } else {
-      processedOutput = await processGenAI(searchInput);
-    }
 
-    //Updates output to database.
-   searchInput.output = processedOutput;
+   //TODO: handle image saving
+   const sketchFile = req.file;
+
+
+   const searchInput = new Suggestion({
+     designBrief,
+     semanticDistance,
+     visualSimilarity,
+     conceptualSimilarity,
+     sustainableGoal,
+     searchType,
+     outputTypes,
+     // TODO: save sketchUrl once I've uploaded the image to storage
+     // sketchUrl,
+   });
+
+
+   //Saves new document to database
    await searchInput.save()
-   console.log("Saved suggestion:", searchInput)
-    
-    //Sending the output to the frontend
-    res.status(200).json({output: processedOutput});
-  } catch(error) {
-    console.error("Error saving search:", error)
-    res.status(500).json({error: "Failed to save search"})
-  }
+
+
+   const guidelineVectors = req.app.locals.loadGuidelineVectors;
+
+
+
+
+   //Branch off processing logic based on searchType
+   //TODO: processStructured/GenAI functions will be located in services/ folder
+   let processedOutput = {};
+   if (searchType === "Structured") {
+     processedOutput = await processStructured(searchInput, guidelineVectors);
+   } else {
+     processedOutput = await processGenAI(searchInput);
+   }
+
+
+   //Updates output to database.
+  searchInput.output = processedOutput;
+  await searchInput.save()
+  console.log("Saved suggestion:", searchInput)
+  
+   //Sending the output to the frontend
+   res.status(200).json({output: processedOutput});
+ } catch(error) {
+   console.error("Error saving search:", error)
+   res.status(500).json({error: "Failed to save search"})
+ }
 });
 
+
 export default router;
+
+
+
+
