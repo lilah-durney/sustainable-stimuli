@@ -1,7 +1,8 @@
-//Core structured engine logic (Word2Vec, similiarty)
-import keywordExtractor from "keyword-extractor";
-import { loadGloveVectors, getVector, hasVector } from "./gloveLoader";
 import fs from "fs";
+import keywordExtractor from "keyword-extractor";
+import {getVector} from "./gloveLoader";
+import path from "path";
+
 
 function extractKeywords(prompt) {
     return keywordExtractor.extract(prompt, {
@@ -31,24 +32,25 @@ function averageVector(words, getVector) {
 
 }
 
-
-
-
-
-export async function processStructured(searchInput) {
-    const prompt = searchInput.designBrief
-    const keywords = extractKeywords(prompt)
-    const promptVector = averageVector(keywords);
-    const guidelineVectors = app.locals.guidelineVectors;
-
-
-
-   
-
+export function loadGuidelineVectors(filePath) {
+    const file = fs.readFileSync(filePath, "utf8");
+    const data = JSON.parse(file)
+    const vectorMap = new Map();
 
     
-    return({extractedWords: keywords })
 
+    for (const obj of data) {
+        const keywords = extractKeywords(obj.guideline);
+        const vector = averageVector(guidelineKeywords);
+        if (vector) {
+            vectorMap.set(obj.id, {
+                ...obj, 
+                vector,
+            });
+        }
+    }
 
-
+    return vectorMap;
+    
 }
+
