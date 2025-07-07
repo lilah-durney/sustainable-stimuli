@@ -5,10 +5,19 @@ import mongoose from "mongoose"
 import dotenv from "dotenv";
 import suggestionRoutes from "./routes/suggestions.js";
 dotenv.config();
+import { loadGloveVectors } from "./services/gloveLoader.js";
+import { loadGuidelineVectors } from "./services/guidelineLoader.js";
 
 const app = express();
 app.use(cors());
 app.use(express.json());
+
+//Load GloVe and guidelines
+await loadGloveVectors("data/glove.6B.100d.txt");
+const guidelineMap = loadGuidelineVectors("data/guidelines.json");
+app.locals.loadGuidelineVectors = guidelineMap;
+
+
 
 app.use("/api/suggestions", suggestionRoutes);
 
