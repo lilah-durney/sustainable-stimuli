@@ -20,6 +20,10 @@ function averageVector(words) {
    const vectors = words
        .map(getVector)
        .filter(x => x !== undefined);
+    
+    if (vectors.length === 0) {
+        throw new Error("None of the extracted keywords have corresponding vectors in the pre-trained set.");
+    }
   
    const sum = new Array(vectors[0].length).fill(0)
   
@@ -79,6 +83,26 @@ function cosineSimliarity(vecA, vecB) {
 
 
 
+function fetchGuideline(promptVector, guidelineVectors) {
+    let closestGuideline = null;
+    let closestSimilarity = -Infinity;
+
+    for (let [guidelineId, guidelineObj] of guidelineVectors) {
+        if (!guidelineObj.vector) {
+            console.warn("Missing vector for guideline:", guidelineObj.guideline);
+            continue;
+        }
+
+        const similarity = cosineSimliarity(promptVector, guidelineObj.vector);
+
+        if (similarity > closestSimilarity) {
+            closestGuideline = guidelineObj.guideline;
+            closestSimilarity = similarity;
+        }
+    }
+
+    return closestGuideline;
+}
 
 
 
@@ -86,17 +110,24 @@ function cosineSimliarity(vecA, vecB) {
 
 export async function processStructured(searchInput, guidelineVectors) {
    const prompt = searchInput.designBrief
+   const similiartyPref = Number(searchInput.semanticDistance)/100
    const keywords = extractKeywords(prompt)
    const promptVector = averageVector(keywords);
+   console.log("promptVector:", promptVector);
+   
+
+   const fetchedGuideline = fetchGuideline(promptVector, guidelineVectors);
   
 
 
-   console.log("promptVector:", promptVector)
+  
+   
 
 
    //TODO: loop over my guidelineVEctors, caluclate the cosineSimiliarty between
    //prompt vector and each guidelineVector, return the correct guideline based on
    //simliiarty/whatveer the user specified.
+   
 
 
  
@@ -105,7 +136,7 @@ export async function processStructured(searchInput, guidelineVectors) {
 
 
   
-   return({extractedWords: keywords })
+   return({guideline: fetchedGuideline, extractedWords: keywords })
 
 
 
