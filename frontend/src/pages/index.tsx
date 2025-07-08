@@ -16,6 +16,15 @@ export default function Home() {
     }
   });
 
+  type Output = {
+    guideline: string;
+    extractedWords: string[];
+  };
+
+  const [output, setOutput] = useState<Output | null>(null);
+  
+
+
   
   const handleSubmit = async () => {
     console.log("Submitted")
@@ -54,6 +63,9 @@ export default function Home() {
     }
 
     const data = await response.json();
+    setOutput(data.output);
+    console.log("Output:", output);
+
     console.log("Success:", data)
 
     } catch(err) {
@@ -265,7 +277,7 @@ export default function Home() {
       {/*Placeholders for the output */}
       <div className="flex flex-col w-full md:w-1/2 space-y-6">
         <div className="bg-gray-200 border border-[#628395] border-[20px] rounded-xl p-6 text-center text-gray-800 w-full h-48 flex items-center justify-center">
-          <p className="text-sm">Text Output</p>
+          <p className="text-sm">{output?.guideline}</p>
         </div>
         <div className="bg-gray-200 border border-[#628395] border-[20px] rounded-xl p-6 text-center text-gray-800 w-full h-80 flex items-center justify-center">
           <p className="text-sm">Image Output</p>

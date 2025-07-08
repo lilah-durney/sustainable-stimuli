@@ -83,26 +83,32 @@ function cosineSimliarity(vecA, vecB) {
 
 
 
-function fetchGuideline(promptVector, guidelineVectors) {
-    let closestGuideline = null;
-    let closestSimilarity = -Infinity;
+function fetchGuideline(promptVector, guidelineVectors, similarityPref) {
+  const guidelinesWithScores = [];
 
-    for (let [guidelineId, guidelineObj] of guidelineVectors) {
-        if (!guidelineObj.vector) {
-            console.warn("Missing vector for guideline:", guidelineObj.guideline);
-            continue;
-        }
-
-        const similarity = cosineSimliarity(promptVector, guidelineObj.vector);
-
-        if (similarity > closestSimilarity) {
-            closestGuideline = guidelineObj.guideline;
-            closestSimilarity = similarity;
-        }
+  for (let [guidelineId, guidelineObj] of guidelineVectors) {
+    if (!guidelineObj.vector) {
+      console.warn("Missing vector for guideline:", guidelineObj.guideline);
+      continue;
     }
 
-    return closestGuideline;
+    const similarity = cosineSimliarity(promptVector, guidelineObj.vector);
+    guidelinesWithScores.push({ guideline: guidelineObj.guideline, similarity });
+  }
+
+  if (guidelinesWithScores.length === 0) {
+    throw new Error("No guideline vectors available for comparison.");
+  }
+
+  //Sort by similarity (descending = most similar first)
+  guidelinesWithScores.sort((a, b) => b.similarity - a.similarity);
+
+  //Index based on user's similiarityPreference
+  const index = Math.floor(similarityPref * (guidelinesWithScores.length - 1));
+  console.log(guidelinesWithScores[index])
+  return guidelinesWithScores[index].guideline;
 }
+
 
 
 
@@ -116,23 +122,7 @@ export async function processStructured(searchInput, guidelineVectors) {
    console.log("promptVector:", promptVector);
    
 
-   const fetchedGuideline = fetchGuideline(promptVector, guidelineVectors);
-  
-
-
-  
-   
-
-
-   //TODO: loop over my guidelineVEctors, caluclate the cosineSimiliarty between
-   //prompt vector and each guidelineVector, return the correct guideline based on
-   //simliiarty/whatveer the user specified.
-   
-
-
- 
-
-
+   const fetchedGuideline = fetchGuideline(promptVector, guidelineVectors, similiartyPref);
 
 
   
