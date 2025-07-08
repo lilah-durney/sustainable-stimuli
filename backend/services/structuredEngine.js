@@ -20,6 +20,10 @@ function averageVector(words) {
    const vectors = words
        .map(getVector)
        .filter(x => x !== undefined);
+    
+    if (vectors.length === 0) {
+        throw new Error("None of the extracted keywords have corresponding vectors in the pre-trained set.");
+    }
   
    const sum = new Array(vectors[0].length).fill(0)
   
@@ -79,6 +83,32 @@ function cosineSimliarity(vecA, vecB) {
 
 
 
+function fetchGuideline(promptVector, guidelineVectors, similarityPref) {
+  const guidelinesWithScores = [];
+
+  for (let [guidelineId, guidelineObj] of guidelineVectors) {
+    if (!guidelineObj.vector) {
+      console.warn("Missing vector for guideline:", guidelineObj.guideline);
+      continue;
+    }
+
+    const similarity = cosineSimliarity(promptVector, guidelineObj.vector);
+    guidelinesWithScores.push({ guideline: guidelineObj.guideline, similarity });
+  }
+
+  if (guidelinesWithScores.length === 0) {
+    throw new Error("No guideline vectors available for comparison.");
+  }
+
+  //Sort by similarity (descending = most similar first)
+  guidelinesWithScores.sort((a, b) => b.similarity - a.similarity);
+
+  //Index based on user's similiarityPreference
+  const index = Math.floor(similarityPref * (guidelinesWithScores.length - 1));
+  console.log(guidelinesWithScores[index])
+  return guidelinesWithScores[index].guideline;
+}
+
 
 
 
@@ -86,26 +116,17 @@ function cosineSimliarity(vecA, vecB) {
 
 export async function processStructured(searchInput, guidelineVectors) {
    const prompt = searchInput.designBrief
+   const similiartyPref = Number(searchInput.semanticDistance)/100
    const keywords = extractKeywords(prompt)
    const promptVector = averageVector(keywords);
-  
+   console.log("promptVector:", promptVector);
+   
 
-
-   console.log("promptVector:", promptVector)
-
-
-   //TODO: loop over my guidelineVEctors, caluclate the cosineSimiliarty between
-   //prompt vector and each guidelineVector, return the correct guideline based on
-   //simliiarty/whatveer the user specified.
-
-
- 
-
-
+   const fetchedGuideline = fetchGuideline(promptVector, guidelineVectors, similiartyPref);
 
 
   
-   return({extractedWords: keywords })
+   return({guideline: fetchedGuideline, extractedWords: keywords })
 
 
 

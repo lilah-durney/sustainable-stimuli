@@ -18,7 +18,7 @@ app.use(express.json());
 await loadGloveVectors("data/glove.6B.100d.txt");
 const guidelineMap = loadGuidelineVectors("data/guidelines.json");
 app.locals.loadGuidelineVectors = guidelineMap;
-console.log("guidelineMap:", guidelineMap)
+
 
 
 

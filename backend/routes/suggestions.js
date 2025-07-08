@@ -86,10 +86,14 @@ router.post("/upload", upload.single("sketchFile"), async (req,res) => {
   
    //Sending the output to the frontend
    res.status(200).json({output: processedOutput});
- } catch(error) {
-   console.error("Error saving search:", error)
-   res.status(500).json({error: "Failed to save search"})
- }
+ } catch (error) {
+  if (error.message.includes("corresponding vectors")) {
+    console.warn("Input could not be processed — prompt too unfamiliar or too niche.");
+  }
+  console.error("Error saving search:", error);
+  res.status(500).json({ error: error.message || "Failed to save search" });
+}
+
 });
 
 
