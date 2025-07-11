@@ -4,19 +4,11 @@ import Suggestion from "../models/Suggestion.js";
 import {v4 as uuidv4} from "uuid";
 import multer from "multer";
 import { processStructured } from "../services/structuredEngine.js";
+import { processGenAI } from "../services/genAIEngine.js";
 
 
 const upload = multer({storage: multer.memoryStorage()});
 const router = express.Router()
-
-
-
-
-
-
-async function processGenAI(inputDoc) {
- return {guideline: "some guideline"};
-}
 
 
 
@@ -65,6 +57,7 @@ router.post("/upload", upload.single("sketchFile"), async (req,res) => {
 
 
    const guidelineVectors = req.app.locals.loadGuidelineVectors;
+   const guidelineList = req.app.locals.guidelineList;
 
 
 
@@ -75,7 +68,7 @@ router.post("/upload", upload.single("sketchFile"), async (req,res) => {
    if (searchType === "Structured") {
      processedOutput = await processStructured(searchInput, guidelineVectors);
    } else {
-     processedOutput = await processGenAI(searchInput);
+     processedOutput = await processGenAI(searchInput, guidelineList);
    }
 
 

@@ -10,12 +10,11 @@ const SuggestionSchema = new Schema({
   sustainableGoal: { type: String }, // sustainability goal
   searchType: { type: String, required: true }, // "genAI" or "structured"
   output: {
-    guideline: String, //for structured
+    guideline: String, //for both
     extractedWords: [String], //for structured
-    suggestion: String, //for genAI
-    rationale: String,
-    category: String,
-    sourceGuideline: String, // for genAI
+    category: String, //for genAI only for now
+    explanation: String, //genAI
+    suggestion: String, //genAI
     similarityScore: Number, // for structured
   },
   energyUsed: { type: Number },

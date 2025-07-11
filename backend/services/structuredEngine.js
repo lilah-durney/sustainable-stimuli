@@ -112,8 +112,6 @@ function fetchGuideline(promptVector, guidelineVectors, similarityPref) {
 
 
 
-
-
 export async function processStructured(searchInput, guidelineVectors) {
    const prompt = searchInput.designBrief
    const similiartyPref = Number(searchInput.semanticDistance)/100
@@ -124,13 +122,6 @@ export async function processStructured(searchInput, guidelineVectors) {
 
    const fetchedGuideline = fetchGuideline(promptVector, guidelineVectors, similiartyPref);
 
-
-  
    return({guideline: fetchedGuideline, extractedWords: keywords })
-
-
-
-
-
 
 }

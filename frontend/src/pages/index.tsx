@@ -16,12 +16,44 @@ export default function Home() {
     }
   });
 
-  type Output = {
+    type Output = {
     guideline: string;
     extractedWords: string[];
+    category: String, //for genAI only for now
+    explanation: String, //genAI
+    suggestion: String, //genAI
   };
 
   const [output, setOutput] = useState<Output | null>(null);
+
+
+  const renderOutput = () => {
+    
+    if (formValues.searchType  == "Structured") {
+      return <p>{output?.guideline}</p>
+      
+    }
+    
+
+    if (formValues.searchType == "GenAI") {
+      return (
+        <div>
+          <p>Guideline: {output?.guideline}</p>
+          <p>Category: {output?.category}</p>
+          <p>Explanation: {output?.explanation}</p>
+          <p>Suggestion: {output?.suggestion}</p>
+        </div>
+      )
+    }
+
+    
+
+
+
+
+  }
+
+
   
 
 
@@ -277,7 +309,8 @@ export default function Home() {
       {/*Placeholders for the output */}
       <div className="flex flex-col w-full md:w-1/2 space-y-6">
         <div className="bg-gray-200 border border-[#628395] border-[20px] rounded-xl p-6 text-center text-gray-800 w-full h-48 flex items-center justify-center">
-          <p className="text-sm">{output?.guideline}</p>
+                        
+        {output? renderOutput() : null}
         </div>
         <div className="bg-gray-200 border border-[#628395] border-[20px] rounded-xl p-6 text-center text-gray-800 w-full h-80 flex items-center justify-center">
           <p className="text-sm">Image Output</p>
