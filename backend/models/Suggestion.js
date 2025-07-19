@@ -21,7 +21,7 @@ const SuggestionSchema = new Schema({
     explanation: String, //genAI
     suggestion: String, //genAI
     similarityScore: Number, // for structured
-    generatedOpenAIUrl:  String,
+    replicateImageUrl:  String,
     permanentGeneratedImageUrl: String
   },
   energyUsed: { type: Number },

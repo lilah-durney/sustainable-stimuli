@@ -74,11 +74,15 @@ export async function processGenAI(searchInput, guidelineList) {
         const cleaned = raw.replace(/```json|```/g, "").trim();
         const parsed = JSON.parse(cleaned);
         return {
+          processedOutput: {
             guideline: parsed.guideline,
             category: parsed.category,
             explanation: parsed.explanation,
-            suggestion: parsed.suggestion
-        };
+            suggestion: parsed.suggestion,
+
+          },
+          userPromptandImageDescripton: userInput }
+       
     } catch (err) {
         console.error("Failed to GPT response:", raw);
         throw new Error("AI response was not valid JSON");

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Info } from 'lucide-react';
 
 export default function Home() {
@@ -23,13 +23,12 @@ export default function Home() {
       explanation: string, //genAI
       suggestion: string, //genAI
       similarityScore: number, // for structured
-      generatedOpenAIUrl:  string,
+      replicateImageUrl:  string,
       permanentGeneratedImageUrl: string
 
   };
 
   const [output, setOutput] = useState<Output | null>(null);
-
 
   const renderOutput = () => {
     
@@ -102,9 +101,7 @@ export default function Home() {
 
     const data = await response.json();
     setOutput(data.output);
-    console.log("Output:", output);
-
-    console.log("Success:", data)
+    console.log("Data from server: ", data);
 
     } catch(err) {
       console.error("Error submitting data", err)
@@ -318,13 +315,15 @@ export default function Home() {
         {output? renderOutput() : null}
         </div>
         <div className="bg-gray-200 border border-[#628395] border-[20px] rounded-xl p-6 text-center text-gray-800 w-full h-80 flex items-center justify-center">
-          {formValues.outputTypes.Image && output?.generatedOpenAIUrl && (
+          
+          {output && (
             <img
-              src={output.generatedOpenAIUrl}
+              src={output.replicateImageUrl}
               alt="Generated Sketch"
               className="max-w-full max-h-full object-contain"
             />
           )}
+
         </div>
       </div>
 
