@@ -2,25 +2,34 @@
 import express from "express";
 import cors from "cors";
 import mongoose from "mongoose"
-import dotenv from "dotenv";
 import suggestionRoutes from "./routes/suggestions.js";
-dotenv.config();
 import { loadGloveVectors } from "./services/gloveLoader.js";
 import { loadGuidelineVectors } from "./services/guidelineLoader.js";
+import fs from "fs";
+
+
+import dotenv from "dotenv";
+dotenv.config();
+
 
 
 const app = express();
 app.use(cors());
 app.use(express.json());
 
+//Load guidelines. 
+const guidelineFile = fs.readFileSync("data/guidelines.json", "utf8");
+const guidelines = JSON.parse(guidelineFile);
+const guidelineList = guidelines
+  .map((g, i) => `${i + 1}. ${g.guideline} (${g.category})`)
+  .join("\n");
 
-//Load GloVe and guidelines
+app.locals.guidelineList = guidelineList;
+
+//Load GloVe and guideline vectors.
 await loadGloveVectors("data/glove.6B.100d.txt");
 const guidelineMap = loadGuidelineVectors("data/guidelines.json");
 app.locals.loadGuidelineVectors = guidelineMap;
-
-
-
 
 
 

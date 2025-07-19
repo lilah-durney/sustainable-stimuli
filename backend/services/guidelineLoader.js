@@ -2,18 +2,12 @@ import fs from "fs";
 import keywordExtractor from "keyword-extractor";
 import {getVector} from "./gloveLoader.js";
 import path from "path";
+import { extractKeywords } from "../utils/extractKeywords.js";
 
 
 
 
-function extractKeywords(prompt) {
-   return keywordExtractor.extract(prompt, {
-       language: "english",
-       remove_digits: true,
-       return_changed_case: true,
-       remove_duplicates: false
-});
-}
+
 
 
 
