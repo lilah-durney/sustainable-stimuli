@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Info } from 'lucide-react';
 
 export default function Home() {
@@ -16,6 +16,46 @@ export default function Home() {
     }
   });
 
+    type Output = {
+      guideline: string, //for both
+      extractedWords: [string], //for structured
+      category: string, //for genAI only for now
+      explanation: string, //genAI
+      suggestion: string, //genAI
+      similarityScore: number, // for structured
+      replicateImageUrl:  string,
+      permanentGeneratedImageUrl: string
+
+  };
+
+  const [output, setOutput] = useState<Output | null>(null);
+
+  const renderOutput = () => {
+    
+    if (formValues.searchType  == "Structured") {
+      return <p>{output?.guideline}</p>
+      
+    }
+    
+
+    if (formValues.searchType == "GenAI") {
+      return (
+        <div>
+          <p>Guideline: {output?.guideline}</p>
+          <p>Category: {output?.category}</p>
+          <p>Explanation: {output?.explanation}</p>
+          <p>Suggestion: {output?.suggestion}</p>
+        </div>
+      )
+    }
+
+
+  }
+
+
+  
+
+
   
   const handleSubmit = async () => {
     console.log("Submitted")
@@ -27,6 +67,12 @@ export default function Home() {
     if (formValues.sketchFile) {
       payload.append("sketchFile", formValues.sketchFile)
     }
+
+    if (!formValues.designBrief && !formValues.sketchFile) {
+      alert("Please provide either a design brief or upload a sketch.");
+      return;
+    }
+
 
     payload.append("semanticDistance", formValues.semanticDistance.toString())
     payload.append("visualSimilarity", formValues.visualSimilarity.toString())
@@ -54,7 +100,8 @@ export default function Home() {
     }
 
     const data = await response.json();
-    console.log("Success:", data)
+    setOutput(data.output);
+    console.log("Data from server: ", data);
 
     } catch(err) {
       console.error("Error submitting data", err)
@@ -262,13 +309,21 @@ export default function Home() {
 
       
       {/* Right column content */}
-      {/*Placeholders for the output */}
       <div className="flex flex-col w-full md:w-1/2 space-y-6">
-        <div className="bg-gray-200 border border-[#628395] border-[20px] rounded-xl p-6 text-center text-gray-800 w-full h-48 flex items-center justify-center">
-          <p className="text-sm">Text Output</p>
+        <div className="bg-gray-200 border border-[#628395] border-[20px] rounded-xl p-6 text-left text-gray-800 w-full h-50 flex items-center justify-center">
+                        
+        {output? renderOutput() : null}
         </div>
         <div className="bg-gray-200 border border-[#628395] border-[20px] rounded-xl p-6 text-center text-gray-800 w-full h-80 flex items-center justify-center">
-          <p className="text-sm">Image Output</p>
+          
+          {output && (
+            <img
+              src={output.replicateImageUrl}
+              alt="Generated Sketch"
+              className="max-w-full max-h-full object-contain"
+            />
+          )}
+
         </div>
       </div>
 

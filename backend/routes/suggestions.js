@@ -4,18 +4,13 @@ import Suggestion from "../models/Suggestion.js";
 import {v4 as uuidv4} from "uuid";
 import multer from "multer";
 import { processStructured } from "../services/structuredEngine.js";
+import { processGenAI } from "../services/genAIEngine.js";
+import uploadToS3 from "../utils/uploadToS3.js";
+import { convertImageToText } from "../services/convertImageToText.js";
+import {generateImageFromSuggestion} from "../services/generateImageFromSuggestion.js"
 
 const upload = multer({storage: multer.memoryStorage()});
 const router = express.Router()
-
-
-
-
-
-
-async function processGenAI(inputDoc) {
- return {guideline: "some guideline"};
-}
 
 
 
@@ -34,16 +29,27 @@ router.post("/upload", upload.single("sketchFile"), async (req,res) => {
    } = req.body
 
 
+   console.log("Parsed req.body keys:", Object.keys(req.body));
+
+   const rawOutputTypes = req.body.outputTypes || {};
    const outputTypes = {
-     Text: req.body["outputTypes[Text]"] === "true",
-     Image: req.body["outputTypes[Image]"] === "true",
-   };
+      Text: rawOutputTypes.Text === "true",
+      Image: rawOutputTypes.Image === "true",
+    };
 
+   
+   let permamentUploadedImageUrl = null;
+   let imageDescription = null;
 
+   if (req.file) {
+    const {key, signedUrl} = await uploadToS3(req.file, "uploads/user-sketches");
 
+    //Send signed URL to openAI for conversion to text (temporary use)
+    imageDescription = await convertImageToText(signedUrl);
 
-   //TODO: handle image saving
-   const sketchFile = req.file;
+    //Save pemament S3 path to DB
+    permamentUploadedImageUrl = `https://${process.env.S3_BUCKET_NAME}.s3.${process.env.AWS_REGION}.amazonaws.com/${key}`;
+   }
 
 
    const searchInput = new Suggestion({
@@ -54,29 +60,43 @@ router.post("/upload", upload.single("sketchFile"), async (req,res) => {
      sustainableGoal,
      searchType,
      outputTypes,
-     // TODO: save sketchUrl once I've uploaded the image to storage
-     // sketchUrl,
+     permamentUploadedImageUrl,
+     imageDescription,
+     outputTypes,
    });
 
 
-   //Saves new document to database
+   //Saves initial input to database
    await searchInput.save()
 
 
    const guidelineVectors = req.app.locals.loadGuidelineVectors;
+   const guidelineList = req.app.locals.guidelineList;
 
 
 
 
-   //Branch off processing logic based on searchType
-   //TODO: processStructured/GenAI functions will be located in services/ folder
+   //Process depending on engine type.
    let processedOutput = {};
    if (searchType === "Structured") {
      processedOutput = await processStructured(searchInput, guidelineVectors);
    } else {
-     processedOutput = await processGenAI(searchInput);
-   }
+      const {processedOutput: genAIOutput, userPromptandImageDescripton} = await processGenAI(searchInput, guidelineList);
 
+      processedOutput = genAIOutput;
+      console.log("processed output:", processedOutput)
+      console.log("user text input and image description:", userPromptandImageDescripton)
+      if (outputTypes.Image) {
+        console.log("Going to generate image");
+        const { replicateImageUrl, s3Url } = await generateImageFromSuggestion(userPromptandImageDescripton, processedOutput.suggestion);
+
+          //Temporary OpenAI image for frontend viewing
+          processedOutput.replicateImageUrl = replicateImageUrl;
+
+          //Save permanent version to DB
+          processedOutput.permanentGeneratedImageUrl = s3Url;
+      }
+   }
 
    //Updates output to database.
   searchInput.output = processedOutput;
@@ -85,10 +105,14 @@ router.post("/upload", upload.single("sketchFile"), async (req,res) => {
   
    //Sending the output to the frontend
    res.status(200).json({output: processedOutput});
- } catch(error) {
-   console.error("Error saving search:", error)
-   res.status(500).json({error: "Failed to save search"})
- }
+ } catch (error) {
+  if (error.message.includes("corresponding vectors")) {
+    console.warn("Input could not be processed — prompt too unfamiliar or too niche.");
+  }
+  console.error("Error saving search:", error);
+  res.status(500).json({ error: error.message || "Failed to save search" });
+}
+
 });
 
 

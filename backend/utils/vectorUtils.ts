@@ -1,1 +1,0 @@
-//Cosinde simliarity calculation
