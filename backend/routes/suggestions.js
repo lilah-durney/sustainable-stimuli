@@ -9,7 +9,6 @@ import uploadToS3 from "../utils/uploadToS3.js";
 import { convertImageToText } from "../services/convertImageToText.js";
 import {generateImageFromSuggestion} from "../services/generateImageFromSuggestion.js"
 
-
 const upload = multer({storage: multer.memoryStorage()});
 const router = express.Router()
 
