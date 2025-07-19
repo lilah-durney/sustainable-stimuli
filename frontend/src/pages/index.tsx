@@ -17,11 +17,15 @@ export default function Home() {
   });
 
     type Output = {
-    guideline: string;
-    extractedWords: string[];
-    category: String, //for genAI only for now
-    explanation: String, //genAI
-    suggestion: String, //genAI
+      guideline: string, //for both
+      extractedWords: [string], //for structured
+      category: string, //for genAI only for now
+      explanation: string, //genAI
+      suggestion: string, //genAI
+      similarityScore: number, // for structured
+      generatedOpenAIUrl:  string,
+      permanentGeneratedImageUrl: string
+
   };
 
   const [output, setOutput] = useState<Output | null>(null);
@@ -46,10 +50,6 @@ export default function Home() {
       )
     }
 
-    
-
-
-
 
   }
 
@@ -68,6 +68,12 @@ export default function Home() {
     if (formValues.sketchFile) {
       payload.append("sketchFile", formValues.sketchFile)
     }
+
+    if (!formValues.designBrief && !formValues.sketchFile) {
+      alert("Please provide either a design brief or upload a sketch.");
+      return;
+    }
+
 
     payload.append("semanticDistance", formValues.semanticDistance.toString())
     payload.append("visualSimilarity", formValues.visualSimilarity.toString())
@@ -306,14 +312,19 @@ export default function Home() {
 
       
       {/* Right column content */}
-      {/*Placeholders for the output */}
       <div className="flex flex-col w-full md:w-1/2 space-y-6">
-        <div className="bg-gray-200 border border-[#628395] border-[20px] rounded-xl p-6 text-center text-gray-800 w-full h-48 flex items-center justify-center">
+        <div className="bg-gray-200 border border-[#628395] border-[20px] rounded-xl p-6 text-left text-gray-800 w-full h-50 flex items-center justify-center">
                         
         {output? renderOutput() : null}
         </div>
         <div className="bg-gray-200 border border-[#628395] border-[20px] rounded-xl p-6 text-center text-gray-800 w-full h-80 flex items-center justify-center">
-          <p className="text-sm">Image Output</p>
+          {formValues.outputTypes.Image && output?.generatedOpenAIUrl && (
+            <img
+              src={output.generatedOpenAIUrl}
+              alt="Generated Sketch"
+              className="max-w-full max-h-full object-contain"
+            />
+          )}
         </div>
       </div>
 

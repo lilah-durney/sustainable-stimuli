@@ -1,18 +1,23 @@
 //Prompt construction & OpenAI API call
 
-import OpenAI from "openai";
 import fs from "fs";
-import openai from "./openAIClient.js"
+import openai from "../utils/openAIClient.js"
+
 
 
 
 
 
 export async function processGenAI(searchInput, guidelineList) {
-   const system_guidelines = `
+
+  const system_guidelines = `
         You are an assistant that helps designers apply sustainable design guidelines.
 
-        The user will give you a design concept that they're working on, and they want to make it more sustainable. 
+        The user will give you either:
+        1. A design concept that they're working on, and they want to make it more sustainable. 
+        2. A description of a sketch they've uploaded. 
+        3. Both a design concept and a description of a sketch they've uploaded. 
+
         Your job is to select one relevant guideline from the list below and respond in strict JSON format.
 
         Guidelines:
@@ -30,7 +35,22 @@ export async function processGenAI(searchInput, guidelineList) {
         Only return a JSON object. Do not include any commentary, markdown, or extra text.
     `;
 
-    const prompt = searchInput.designBrief
+    //Build the user message content based on whether or not they included sketch or text. 
+    let userInput = "";
+    const designBrief = searchInput.designBrief;
+    const imageDescription = searchInput.imageDescription;
+
+    if (designBrief && imageDescription) {
+      userInput = `Design brief: ${designBrief}\n\nSketch description: ${imageDescription}`;
+    } else if (designBrief) {
+      userInput = `Design brief: ${designBrief}`;
+    } else if (imageDescription) {
+      userInput = `Sketch description: ${imageDescription}`;
+    } else {
+      throw new Error("User input is empty — must provide a design brief or upload a sketch.");
+    }
+
+    console.log("User input:", userInput)
 
     
   const response = await openai.chat.completions.create({
@@ -42,7 +62,7 @@ export async function processGenAI(searchInput, guidelineList) {
       },
       {
         role: "user",
-        content: prompt,
+        content: userInput,
       }
     ]
   });

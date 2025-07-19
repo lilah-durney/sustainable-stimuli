@@ -2,16 +2,8 @@
 import keywordExtractor from "keyword-extractor";
 import { loadGloveVectors, getVector, hasVector } from "./gloveLoader.js";
 import fs from "fs";
+import { extractKeywords } from "../utils/extractKeywords.js";
 
-
-function extractKeywords(prompt) {
-   return keywordExtractor.extract(prompt, {
-       language: "english",
-       remove_digits: true,
-       return_changed_case: true,
-       remove_duplicates: false
-});
-}
 
 
 
@@ -113,15 +105,38 @@ function fetchGuideline(promptVector, guidelineVectors, similarityPref) {
 
 
 export async function processStructured(searchInput, guidelineVectors) {
-   const prompt = searchInput.designBrief
-   const similiartyPref = Number(searchInput.semanticDistance)/100
-   const keywords = extractKeywords(prompt)
-   const promptVector = averageVector(keywords);
-   console.log("promptVector:", promptVector);
+  //Build the user message content based on whether or not they included sketch or text. 
+
+  let promptKeywords = [];
+  const designBrief = searchInput.designBrief;
+  if (designBrief) {
+    const designBriefKeywords = extractKeywords(designBrief);
+    promptKeywords.push(...designBriefKeywords);
+  } 
+
+  const imageDescription = searchInput.imageDescription;
+  if (imageDescription) {
+    const imageDescriptionKeywords = extractKeywords(imageDescription);
+    promptKeywords.push(...imageDescriptionKeywords)
+  }
+
+  if (promptKeywords == []){
+    throw new Error("User input is empty — must provide a design brief or upload a sketch.");
+  }
+    
+
+
+  const promptVector = averageVector(promptKeywords);
+
+  const similiartyPref = Number(searchInput.semanticDistance)/100
    
 
-   const fetchedGuideline = fetchGuideline(promptVector, guidelineVectors, similiartyPref);
+  console.log("promptVector:", promptVector);
+   
 
-   return({guideline: fetchedGuideline, extractedWords: keywords })
+  const fetchedGuideline = fetchGuideline(promptVector, guidelineVectors, similiartyPref);
+
+  return({guideline: fetchedGuideline, extractedWords: promptKeywords})
 
 }
+
