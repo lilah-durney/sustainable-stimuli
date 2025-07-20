@@ -81,14 +81,14 @@ router.post("/upload", upload.single("sketchFile"), async (req,res) => {
    if (searchType === "Structured") {
      processedOutput = await processStructured(searchInput, guidelineVectors);
    } else {
-      const {processedOutput: genAIOutput, userPromptandImageDescripton} = await processGenAI(searchInput, guidelineList);
+      processedOutput = await processGenAI(searchInput, guidelineList);
 
-      processedOutput = genAIOutput;
-      console.log("processed output:", processedOutput)
-      console.log("user text input and image description:", userPromptandImageDescripton)
+  
+      console.log("SEARCH INPUT NOW:", searchInput)
+    
       if (outputTypes.Image) {
         console.log("Going to generate image");
-        const { replicateImageUrl, s3Url } = await generateImageFromSuggestion(userPromptandImageDescripton, processedOutput.suggestion);
+        const { replicateImageUrl, s3Url } = await generateImageFromSuggestion(searchInput, processedOutput.suggestion);
 
           //Temporary OpenAI image for frontend viewing
           processedOutput.replicateImageUrl = replicateImageUrl;

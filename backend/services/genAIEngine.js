@@ -16,7 +16,7 @@ export async function processGenAI(searchInput, guidelineList) {
         The user will give you either:
         1. A design concept that they're working on, and they want to make it more sustainable. 
         2. A description of a sketch they've uploaded. 
-        3. Both a design concept and a description of a sketch they've uploaded. 
+        3. Both a design concept and a description of a sketch they've uploaded.
 
         Your job is to select one relevant guideline from the list below and respond in strict JSON format.
 
@@ -74,15 +74,12 @@ export async function processGenAI(searchInput, guidelineList) {
         const cleaned = raw.replace(/```json|```/g, "").trim();
         const parsed = JSON.parse(cleaned);
         return {
-          processedOutput: {
             guideline: parsed.guideline,
             category: parsed.category,
             explanation: parsed.explanation,
             suggestion: parsed.suggestion,
 
-          },
-          userPromptandImageDescripton: userInput }
-       
+          }
     } catch (err) {
         console.error("Failed to GPT response:", raw);
         throw new Error("AI response was not valid JSON");
