@@ -1,5 +1,5 @@
 import openai from "../utils/openAIClient.js";
-import uploadToS3 from "../utils/uploadToS3.js";
+import uploadToGDrive from "../utils/uploadToGDrive.js";
 import axios from "axios";
 import Replicate from "replicate";
 
@@ -9,11 +9,14 @@ const replicate = new Replicate({
   auth: process.env.REPLICATE_API_TOKEN
 })
 
-function describeConceptualSimiiarity(conceptualSimilarity) {
+function describeConceptualSimilarity(conceptualSimilarity) {
   if (conceptualSimilarity < 33) {
-    return `Low conceptual similarity, very conceptually different from the desciprtion of the user's image`
+    return `Low conceptual similarity, very conceptually different from the description of the user's image`
   } else if (conceptualSimilarity > 66) {
     return `High conceptual simlarity, conceptually very simliar to the description of the user's image`
+  } else {
+     return `Medium conceptual simlarity, conceptually somewhat simliar to the description of the user's image`
+
   }
 }
 
@@ -22,6 +25,8 @@ function describeVisualSimilarity(visualSimilarity) {
     return `Low visual similarity, very visually different from the description of the user's image.`
   } else if (visualSimilarity > 66) {
     return  `High visual similarity, visually very similar to the description of the user's image`
+  } else {
+    return `Medium visual similarity, visually somewhat similiar to the description of the user's image`
   }
 }
 
@@ -31,7 +36,7 @@ export async function generateImageFromSuggestion(searchInput, suggestionText) {
 
   let originalConcept = "" 
   if (searchInput.designBrief && searchInput.imageDescription) {
-    const conceptualSimilarity = describeConceptualSimiiarity(searchInput.conceptualSimilarity)
+    const conceptualSimilarity = describeConceptualSimilarity(searchInput.conceptualSimilarity)
     const visualSimilarity = describeVisualSimilarity(searchInput.visualSimilarity)
 
     originalConcept = `Design brief: ${searchInput.designBrief}, Uploaded image description: ${searchInput.imageDescription},
@@ -42,7 +47,7 @@ export async function generateImageFromSuggestion(searchInput, suggestionText) {
     originalConcept = `Design brief: ${searchInput.designBrief}`
 
   } else if (searchInput.imageDescription) {
-      const conceptualSimilarity = describeConceptualSimiiarity(searchInput.conceptualSimliarity)
+      const conceptualSimilarity = describeConceptualSimilarity(searchInput.conceptualSimliarity)
       const visualSimilarity = describeVisualSimilarity(searchInput.visualSimilarity)
 
       originalConcept = `Uploaded image description: ${searchInput.imageDescription}, 
@@ -68,8 +73,7 @@ export async function generateImageFromSuggestion(searchInput, suggestionText) {
   {
       input: {
         prompt: prompt,
-        width: 1024,
-        height: 1024,
+        aspect_ratio: "16:9",
         num_outputs: 1,
         style_preset: "sketch",
         negative_prompt: "color, photo-realistic, clutter, blurry",
@@ -89,12 +93,14 @@ export async function generateImageFromSuggestion(searchInput, suggestionText) {
     buffer: Buffer.from(imageBuffer),
   };
 
-  //Upload to S3
-  const { key } = await uploadToS3(fakeFile, "uploads/generated-sketches");
-  const s3Url = `https://${process.env.S3_BUCKET_NAME}.s3.${process.env.AWS_REGION}.amazonaws.com/${key}`;
+  //Upload to Google Drive
+  const {webViewLink} = await uploadToGDrive(fakeFile, "generated-sketches")
 
   return {
-    replicateImageUrl, // for immediate frontend display
-    s3Url,     // for persistent storage
-  };
+    replicateImageUrl,  //for immediate frontend display
+    webViewLink //to save to drive
+  }
+
+
 }
+

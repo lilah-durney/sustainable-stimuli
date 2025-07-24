@@ -32,6 +32,8 @@ export default function Home() {
 
   const [output, setOutput] = useState<Output | null>(null);
   const [loading, setLoading] = useState(false);
+  const [hasSearched, setHasSearched] = useState(false);
+
   
 
 
@@ -45,7 +47,7 @@ export default function Home() {
       const shouldShowImage = formValues.outputTypes.Image;
 
       const textContent = shouldShowText ? (
-          <div className="space-y-1 text-m text-gray-800">
+          <div className="space-y-1 text-m text-left text-gray-800">
             <p><span className="font-semibold text-green-900">Guideline:</span> {output.guideline}</p>
 
             {formValues.searchType === "GenAI" && (
@@ -114,6 +116,7 @@ export default function Home() {
   });
    
 
+  setHasSearched(true);
   setLoading(true);
 
     try {
@@ -127,7 +130,7 @@ export default function Home() {
     }
 
     const data = await response.json();
-    setOutput(data.output);
+    setOutput({...data.output, replicateImageUrl: data.replicateImageUrl});
     console.log("Data from server: ", data);
 
     } catch(err) {
@@ -146,48 +149,64 @@ export default function Home() {
 
     const isSubmitDisabled = !(hasInput && hasSearchType && hasOutputType);
 
+    useEffect(() => {
+      if (hasSearched) {
+        setOutput(null);
+      }
+    }, [formValues]);
+
 
   
   
     return (
-      <div className="flex flex-col md:flex-row w-full max-h-screen px-6 py-10 gap-10 bg-[#FFFAEE] " >
+      <div className="flex flex-col md:flex-row w-full max-h-screen px-6 py-5 gap-10 bg-white " >
+        
 
         {/* Left column content */}
-        <div className="flex flex-col w-full md:w-1/2 space-y-6">
+        <div className="flex flex-col w-full md:w-1/2 h-full justify-between">
+        <h1 className="text-3xl text-green-900 font-bold mb-3 text-shadow-lg"
+        style={{ textShadow: '1px 1px 3px rgba(0,0,0,0.2)' }}>Sustainable Stimuli Platform</h1>
 
-          <h1 className="text-2xl text-green-900 font-bold">Sustainable Stimuli Platform</h1>
+          <div className = "space-y-4">
+            
 
           {/* Design Brief */}
-          <textarea
-            id = "designBrief"
-            value={formValues.designBrief}
-            onChange={(e) =>
-              setFormValues((prev) => ({ ...prev, designBrief: e.target.value }))
-            }
-            className="bg-gray-200 w-full h-64 border-[20px] border-[#628395] rounded-xl p-4 resize-none focus:outline-none"
-            placeholder="Enter design brief..."
-          />
+          <div>
+            <h2 className="text-lg font-bold mb-2 text-green-900">Design Brief</h2>
+            <textarea
+              id = "designBrief"
+              value={formValues.designBrief}
+              onChange={(e) =>
+                setFormValues((prev) => ({ ...prev, designBrief: e.target.value }))
+              }
+              className="shadow-sm shadow-gray-400 bg-gray-200 w-full h-40 border-[6px] border-[#628395] rounded-xl p-4 resize-none focus:outline-none"
+              placeholder="Enter design brief..."
+            />
+          </div>
 
           {/* File Upload */}
-          <div className="border-[20px] border-[#628395] rounded-xl p-7 bg-gray-200 text-center">
-            <input
-              type="file"
-              accept="image/*"
-              onChange={(e) =>
-                setFormValues((prev) => ({
-                  ...prev,
-                  sketchFile: e.target.files?.[0] || null,
-                }))
-              }
-              className="w-full"
-            />
+          <div>
+            <h2 className="text-lg font-bold mb-2 text-green-900">Sketch Upload</h2>
+            <div className="shadow-sm shadow-gray-400 border-[6px] border-[#628395] rounded-xl p-7 bg-gray-200 text-center">
+              <input
+                type="file"
+                accept="image/*"
+                onChange={(e) =>
+                  setFormValues((prev) => ({
+                    ...prev,
+                    sketchFile: e.target.files?.[0] || null,
+                  }))
+                }
+                className="w-full"
+              />
+            </div>
           </div>
 
           <div className="flex flex-col md:flex-row gap-10 w-full">
             {/* Search Refinement */}
             <div>
-              <h2 className="text-lg font-semibold mb-2 text-green-900">Search Refinement</h2>
-              <div className="bg-[#628395] rounded-xl p-6 text-white space-y-6 w-full max-w-md">
+              <h2 className="text-lg font-bold mb-2 text-green-900">Search Refinement</h2>
+              <div className="shadow-sm shadow-gray-400 bg-[#628395] rounded-xl p-6 text-white space-y-6 w-full max-w-md">
 
 
               {/* Semantic Distance (Structured only) */}
@@ -353,10 +372,10 @@ export default function Home() {
                   {/* Search Type */}
                   <div className="flex-1 relative">
                       <div className="flex items-center justify-between mb-2">
-                        <h2 className="text-lg font-semibold text-green-900">Search Type</h2>
+                        <h2 className="text-lg font-bold text-green-900">Search Type</h2>
                       </div>
 
-                      <div className="bg-[#628395] rounded-xl p-4 text-white w-full space-y-2">
+                      <div className="shadow-sm shadow-gray-400 bg-[#628395] rounded-xl p-4 text-white w-full space-y-2">
                         {["Structured", "GenAI"].map((type) => (
                           <div key={type} className="flex items-center justify-between relative">
                             <div className="flex items-center space-x-2">
@@ -395,8 +414,8 @@ export default function Home() {
                   
                   {/* Output Type */}
                   <div className="flex-1">
-                    <h2 className="text-lg font-semibold mb-2 text-green-900">Output Type</h2>
-                    <div className="bg-[#628395] rounded-xl p-4 text-white space-y-2">
+                    <h2 className="text-lg font-bold mb-2 text-green-900">Output Type</h2>
+                    <div className="shadow-sm shadow-gray-400 bg-[#628395] rounded-xl p-4 text-white space-y-2">
                       {["Text", "Image"].map((outputType) => {
                         const isImage = outputType === "Image";
                         const isDisabled = isImage && formValues.searchType !== "GenAI";
@@ -431,41 +450,62 @@ export default function Home() {
                       })}
                     </div>
                   </div>
+
+
+
+
+
+                  </div>
+                  
+
+
+
+
               </div>
+              
+
+              
             </div>
+            {/* Search Button */}
+            <div className="relative -top-8 pl-[85%]">
+              <button 
+                className={`shadow-sm shadow-gray-400 rounded-full px-6 py-2 w-max transition ${
+                  isSubmitDisabled
+                    ? "bg-gray-400 text-white cursor-not-allowed"
+                    : "bg-green-900 text-white hover:bg-green-800"
+                }`}
+                onClick={() => !isSubmitDisabled && handleSubmit()}
+                disabled={isSubmitDisabled}
+              >
+                Search
+              </button>
+
+              {isSubmitDisabled && (
+                <div className="absolute bottom-full left-10 bottom-5 mb-2 hidden group-hover:block w-64 text-xs text-white bg-gray-800 rounded shadow-lg px-3 py-2 z-30">
+                  Please enter a design brief or upload a sketch, select a search type, and choose at least one output type.
+                </div>
+              )}
+            </div>
+
+            
+            
           </div>
 
-
-          {/* Search Button */}
-          <div className="relative group w-max">
-            <button 
-              className={`rounded-full px-6 py-2 w-max transition ${
-                isSubmitDisabled
-                  ? "bg-gray-400 text-white cursor-not-allowed"
-                  : "bg-green-900 text-white hover:bg-green-800"
-              }`}
-              onClick={() => !isSubmitDisabled && handleSubmit()}
-              disabled={isSubmitDisabled}
-            >
-              Search
-            </button>
-
-            {isSubmitDisabled && (
-              <div className="absolute bottom-full left-10 bottom-5 mb-2 hidden group-hover:block w-64 text-xs text-white bg-gray-800 rounded shadow-lg px-3 py-2 z-30">
-                Please enter a design brief or upload a sketch, select a search type, and choose at least one output type.
-              </div>
-            )}
-          </div>
-
+          
 
 
         </div>
 
         
         {/* Right column content */}
-        <div className="flex flex-col w-full md:w-1/2 space-y-6">
+        
+        <div className="shadow-md shadow-gray-400 bg-[#FFFAEE] border border-[#FFFAEE] pr-5 pl-5 p-4 rounded-xl flex flex-col w-full md:w-1/2 space-y-4">
+          <h2 className="text-lg font-semibold text-green-900 flex justify-end">Energy Usage</h2>
+          
           {/* Text Output Area*/}
-          <div className="bg-gray-200 border border-[#628395] border-[20px] rounded-xl p-6 text-left text-gray-800 w-full h-50 flex items-center justify-center">
+         <h2 className="text-lg font-bold text-green-900">Design Suggestion</h2>
+          <div className="shadow-sm shadow-gray-400 bg-gray-200 border border-[#628395] border-[6px] rounded-xl pl-4 pr-4 items-center justify-center text-gray-800 w-full h-64 flex ">
+            
             {formValues.outputTypes.Text ? (
               loading ? (
                 <ClipLoader color="#2F4F4F" size={20} />
@@ -478,7 +518,13 @@ export default function Home() {
           </div>
 
           {/* Image output area */}
-          <div className="bg-gray-200 border border-[#628395] border-[20px] rounded-xl p-6 text-center text-gray-800 w-full h-80 flex items-center justify-center">
+          <h2 className="text-lg font-bold mb-2 text-green-900">Sketch Suggestion</h2>
+          <div
+            className={`shadow-sm shadow-gray-400 ${
+              image ? "bg-white" : "bg-gray-200"
+            } border border-[#628395] border-[6px] p-4 rounded-xl text-center text-gray-800 w-full h-80 flex items-center justify-center`}
+          >
+                      
             {formValues.outputTypes.Image ? (
               loading ? (
                 <ClipLoader color="#2F4F4F" size={20} />

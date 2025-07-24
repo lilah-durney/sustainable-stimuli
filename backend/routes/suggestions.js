@@ -5,9 +5,10 @@ import {v4 as uuidv4} from "uuid";
 import multer from "multer";
 import { processStructured } from "../services/structuredEngine.js";
 import { processGenAI } from "../services/genAIEngine.js";
-import uploadToS3 from "../utils/uploadToS3.js";
 import { convertImageToText } from "../services/convertImageToText.js";
 import {generateImageFromSuggestion} from "../services/generateImageFromSuggestion.js"
+import uploadToGDrive from "../utils/uploadToGDrive.js";
+
 
 const upload = multer({storage: multer.memoryStorage()});
 const router = express.Router()
@@ -38,17 +39,20 @@ router.post("/upload", upload.single("sketchFile"), async (req,res) => {
     };
 
    
-   let permamentUploadedImageUrl = null;
+   let permanentUploadedImageUrl = null;
    let imageDescription = null;
+   
 
    if (req.file) {
-    const {key, signedUrl} = await uploadToS3(req.file, "uploads/user-sketches");
+    const { webViewLink } = await uploadToGDrive(req.file, "uploads/user-sketches");
 
-    //Send signed URL to openAI for conversion to text (temporary use)
-    imageDescription = await convertImageToText(signedUrl);
+    //Use buffer directly to get image description
+    imageDescription = await convertImageToText(req.file.buffer);
 
-    //Save pemament S3 path to DB
-    permamentUploadedImageUrl = `https://${process.env.S3_BUCKET_NAME}.s3.${process.env.AWS_REGION}.amazonaws.com/${key}`;
+    //Save permanent Google Drive link
+    permanentUploadedImageUrl = webViewLink;
+
+    
    }
 
 
@@ -60,9 +64,8 @@ router.post("/upload", upload.single("sketchFile"), async (req,res) => {
      sustainableGoal,
      searchType,
      outputTypes,
-     permamentUploadedImageUrl,
+     permanentUploadedImageUrl,
      imageDescription,
-     outputTypes,
    });
 
 
@@ -77,6 +80,7 @@ router.post("/upload", upload.single("sketchFile"), async (req,res) => {
 
 
    //Process depending on engine type.
+   let replicateImageUrl = null;
    let processedOutput = {};
    if (searchType === "Structured") {
      processedOutput = await processStructured(searchInput, guidelineVectors);
@@ -85,16 +89,16 @@ router.post("/upload", upload.single("sketchFile"), async (req,res) => {
 
   
       console.log("SEARCH INPUT NOW:", searchInput)
+
+    
     
       if (outputTypes.Image) {
-        console.log("Going to generate image");
-        const { replicateImageUrl, s3Url } = await generateImageFromSuggestion(searchInput, processedOutput.suggestion);
+          console.log("Going to generate image");
+          const result = await generateImageFromSuggestion(searchInput, processedOutput.suggestion);
 
-          //Temporary OpenAI image for frontend viewing
-          processedOutput.replicateImageUrl = replicateImageUrl;
+          replicateImageUrl = result.replicateImageUrl;
+          processedOutput.permanentGeneratedImageUrl = result.webViewLink;
 
-          //Save permanent version to DB
-          processedOutput.permanentGeneratedImageUrl = s3Url;
       }
    }
 
@@ -104,7 +108,7 @@ router.post("/upload", upload.single("sketchFile"), async (req,res) => {
   console.log("Saved suggestion:", searchInput)
   
    //Sending the output to the frontend
-   res.status(200).json({output: processedOutput});
+   res.status(200).json({output: processedOutput, replicateImageUrl});
  } catch (error) {
   if (error.message.includes("corresponding vectors")) {
     console.warn("Input could not be processed — prompt too unfamiliar or too niche.");

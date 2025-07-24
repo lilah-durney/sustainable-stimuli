@@ -43,3 +43,5 @@ next-env.d.ts
 
 
 backend/data/glove.6B.100d.txt
+
+/backend/config/gdrive-service-account.json

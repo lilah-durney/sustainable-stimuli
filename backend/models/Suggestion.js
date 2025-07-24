@@ -3,7 +3,7 @@ const { Schema, models } = mongoose;
 
 const SuggestionSchema = new Schema({
   designBrief: { type: String }, // design brief from user
-  permamentUploadedImageUrl: { type: String }, //optional 
+  permanentUploadedImageUrl: { type: String }, //optional 
   imageDescription: {type: String},
   semanticDistance: { type: Number }, // might want to change this to a number scale instead (same for the similarities below)
   visualSimilarity: { type: Number},
@@ -21,7 +21,6 @@ const SuggestionSchema = new Schema({
     explanation: String, //genAI
     suggestion: String, //genAI
     similarityScore: Number, // for structured
-    replicateImageUrl:  String,
     permanentGeneratedImageUrl: String
   },
   energyUsed: { type: Number },

@@ -11,6 +11,8 @@ import fs from "fs";
 import dotenv from "dotenv";
 dotenv.config();
 
+console.log("ENV loaded:", process.env.GOOGLE_APPLICATION_CREDENTIALS);
+
 
 const app = express();
 app.use(cors());
