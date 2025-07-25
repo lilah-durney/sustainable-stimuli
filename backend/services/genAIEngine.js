@@ -1,15 +1,8 @@
 //Prompt construction & OpenAI API call
-
 import fs from "fs";
-import openai from "../utils/openAIClient.js"
-
-
-
-
-
+import openai from "../utils/openAIClient.js";
 
 export async function processGenAI(searchInput, guidelineList) {
-
   const system_guidelines = `
         You are an assistant that helps designers apply sustainable design guidelines.
 
@@ -35,57 +28,57 @@ export async function processGenAI(searchInput, guidelineList) {
         Only return a JSON object. Do not include any commentary, markdown, or extra text.
     `;
 
-    //Build the user message content based on whether or not they included sketch or text. 
-    let userInput = "";
-    const designBrief = searchInput.designBrief;
-    const imageDescription = searchInput.imageDescription;
+  // Build the user message content based on whether or not they included sketch or text. 
+  let userInput = "";
+  const designBrief = searchInput.designBrief;
+  const imageDescription = searchInput.imageDescription;
 
-    if (designBrief && imageDescription) {
-      userInput = `Design brief: ${designBrief}\n\nSketch description: ${imageDescription}`;
-    } else if (designBrief) {
-      userInput = `Design brief: ${designBrief}`;
-    } else if (imageDescription) {
-      userInput = `Sketch description: ${imageDescription}`;
-    } else {
-      throw new Error("User input is empty — must provide a design brief or upload a sketch.");
-    }
+  if (designBrief && imageDescription) {
+    userInput = `Design brief: ${designBrief}\n\nSketch description: ${imageDescription}`;
+  } else if (designBrief) {
+    userInput = `Design brief: ${designBrief}`;
+  } else if (imageDescription) {
+    userInput = `Sketch description: ${imageDescription}`;
+  } else {
+    throw new Error("User input is empty — must provide a design brief or upload a sketch.");
+  }
 
-    console.log("User input:", userInput)
+  console.log("User input:", userInput);
 
-    
-  const response = await openai.chat.completions.create({
-    model: "gpt-4o",
-    messages: [
-      {
-        role: "system",
-        content: system_guidelines,
-      },
-      {
-        role: "user",
-        content: userInput,
-      }
-    ]
-  });
+  let raw;
+  try {
+    const response = await openai.chat.completions.create({
+      model: "gpt-4o",
+      messages: [
+        {
+          role: "system",
+          content: system_guidelines,
+        },
+        {
+          role: "user",
+          content: userInput,
+        }
+      ]
+    });
 
+    raw = response.choices[0].message.content;
+  } catch (err) {
+    console.error("OpenAI API error:", err);
+    throw new Error("AI model failed to generate a response. Please try again later.");
+  }
 
-  const raw = response.choices[0].message.content;
+  try {
+    const cleaned = raw.replace(/```json|```/g, "").trim();
+    const parsed = JSON.parse(cleaned);
 
-    try {
-        const cleaned = raw.replace(/```json|```/g, "").trim();
-        const parsed = JSON.parse(cleaned);
-        return {
-            guideline: parsed.guideline,
-            category: parsed.category,
-            explanation: parsed.explanation,
-            suggestion: parsed.suggestion,
-
-          }
-    } catch (err) {
-        console.error("Failed to GPT response:", raw);
-        throw new Error("AI response was not valid JSON");
-    }
-  
-  
+    return {
+      guideline: parsed.guideline,
+      category: parsed.category,
+      explanation: parsed.explanation,
+      suggestion: parsed.suggestion,
+    };
+  } catch (err) {
+    console.error("Failed to parse GPT response:", raw);
+    throw new Error("AI response was not valid JSON. Please rephrase your input or try again.");
+  }
 }
-
-    

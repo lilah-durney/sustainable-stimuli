@@ -44,7 +44,7 @@ router.post("/upload", upload.single("sketchFile"), async (req,res) => {
    
 
    if (req.file) {
-    const { webViewLink } = await uploadToGDrive(req.file, "uploads/user-sketches");
+    const { webViewLink } = await uploadToGDrive(req.file, "uploaded-sketches");
 
     //Use buffer directly to get image description
     imageDescription = await convertImageToText(req.file.buffer);

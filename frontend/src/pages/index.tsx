@@ -33,6 +33,8 @@ export default function Home() {
   const [output, setOutput] = useState<Output | null>(null);
   const [loading, setLoading] = useState(false);
   const [hasSearched, setHasSearched] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
 
   
 
@@ -87,6 +89,12 @@ export default function Home() {
   
   const handleSubmit = async () => {
     console.log("Submitted")
+    
+    setHasSearched(true);
+    setOutput(null);
+    setError(null)
+    setLoading(true);
+
     const payload = new FormData();
     if (formValues.designBrief) {
        payload.append("designBrief", formValues.designBrief)
@@ -94,11 +102,6 @@ export default function Home() {
 
     if (formValues.sketchFile) {
       payload.append("sketchFile", formValues.sketchFile)
-    }
-
-    if (!formValues.designBrief && !formValues.sketchFile) {
-      alert("Please provide either a design brief or upload a sketch.");
-      return;
     }
 
 
@@ -116,8 +119,7 @@ export default function Home() {
   });
    
 
-  setHasSearched(true);
-  setLoading(true);
+
 
     try {
       const response = await fetch("http://localhost:4000/api/suggestions/upload", {
@@ -125,18 +127,29 @@ export default function Home() {
         body: payload,
       });
 
-      if (!response.ok) {
-      throw new Error("Failed to submit suggestion");
-    }
+        if (!response.ok) {
+          let errorMessage = "Something went wrong. Please try again.";
+          try {
+            const errorData = await response.json();
+            if (errorData.error) {
+              errorMessage = errorData.error;
+            }
+          } catch (jsonErr) {
+            const text = await response.text();
+            if (text) errorMessage = text;
+          }
+          throw new Error(errorMessage);
+        }
 
-    const data = await response.json();
-    setOutput({...data.output, replicateImageUrl: data.replicateImageUrl});
-    console.log("Data from server: ", data);
+      const data = await response.json();
+      setOutput({ ...data.output, replicateImageUrl: data.replicateImageUrl });
+      console.log("Data from server: ", data);
 
-    } catch(err) {
-      console.error("Error submitting data", err)
+    } catch (err: any) {
+      console.error("Error submitting data", err);
+      setError(err.message || "Something went wrong. Please try again.");
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
 
     };
@@ -151,7 +164,9 @@ export default function Home() {
 
     useEffect(() => {
       if (hasSearched) {
+        setHasSearched(true);
         setOutput(null);
+      
       }
     }, [formValues]);
 
@@ -163,7 +178,7 @@ export default function Home() {
         
 
         {/* Left column content */}
-        <div className="flex flex-col w-full md:w-1/2 h-full justify-between">
+        <div className="flex flex-col mt-2 w-full md:w-1/2 h-full justify-between">
         <h1 className="text-3xl text-green-900 font-bold mb-3 text-shadow-lg"
         style={{ textShadow: '1px 1px 3px rgba(0,0,0,0.2)' }}>Sustainable Stimuli Platform</h1>
 
@@ -504,17 +519,20 @@ export default function Home() {
           
           {/* Text Output Area*/}
          <h2 className="text-lg font-bold text-green-900">Design Suggestion</h2>
-          <div className="shadow-sm shadow-gray-400 bg-gray-200 border border-[#628395] border-[6px] rounded-xl pl-4 pr-4 items-center justify-center text-gray-800 w-full h-64 flex ">
+          <div className="shadow-sm shadow-gray-400 bg-gray-200 border border-[#476C81] border-[6px] rounded-xl pl-4 pr-4 items-center justify-center text-gray-800 w-full h-64 flex ">
             
             {formValues.outputTypes.Text ? (
               loading ? (
                 <ClipLoader color="#2F4F4F" size={20} />
+              ) : error ? (
+                <p className="text-red-600 font-semibold">{error}</p>
               ) : (
                 text || <p className="text-gray-400">Submit to receive design suggestion.</p>
               )
             ) : (
               <p className="text-gray-400">Text output not selected.</p>
             )}
+
           </div>
 
           {/* Image output area */}
@@ -522,12 +540,14 @@ export default function Home() {
           <div
             className={`shadow-sm shadow-gray-400 ${
               image ? "bg-white" : "bg-gray-200"
-            } border border-[#628395] border-[6px] p-4 rounded-xl text-center text-gray-800 w-full h-80 flex items-center justify-center`}
+            } border border-[#476C81] border-[6px] p-4 rounded-xl text-center text-gray-800 w-full h-80 flex items-center justify-center`}
           >
                       
             {formValues.outputTypes.Image ? (
               loading ? (
                 <ClipLoader color="#2F4F4F" size={20} />
+              ) : error ? (
+                <p className="text-red-600 font-semibold">{error}</p>
               ) : (
                 image || <p className="text-gray-400">Submit to receive image.</p>
               )
