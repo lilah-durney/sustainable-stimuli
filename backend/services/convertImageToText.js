@@ -9,7 +9,6 @@ export async function convertImageToText(buffer, emissions) {
     
         const base64Image = buffer.toString("base64")
     
-
     try {
         const response = await openai.responses.create({
             model: "gpt-4.1-mini",
@@ -40,6 +39,5 @@ export async function convertImageToText(buffer, emissions) {
         console.error("Failed to convert image to text:", err)
         throw new Error("Image-to-text conversion failed");
     }
-
 
 }

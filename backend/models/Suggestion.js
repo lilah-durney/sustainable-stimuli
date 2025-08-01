@@ -2,25 +2,25 @@ import mongoose from "mongoose";
 const { Schema, models } = mongoose;
 
 const SuggestionSchema = new Schema({
-  designBrief: { type: String }, // design brief from user
-  permanentUploadedImageUrl: { type: String }, //optional 
+  designBrief: { type: String },
+  permanentUploadedImageUrl: { type: String }, 
   imageDescription: {type: String},
   semanticDistance: { type: Number }, 
   visualSimilarity: { type: Number},
   conceptualSimilarity: { type: Number},
-  sustainableGoal: { type: String }, // sustainability goal
-  searchType: { type: String, required: true }, // "genAI" or "structured"
+  sustainableGoal: { type: String },
+  searchType: { type: String, required: true },
   outputTypes: {
     Text: Boolean,
     Image: Boolean,
   },
   output: {
-    guideline: String, //for both
-    extractedWords: [String], //for structured
-    category: String, //for genAI only for now
-    explanation: String, //genAI
-    suggestion: String, //genAI
-    similarityScore: Number, // for structured
+    guideline: String, 
+    extractedWords: [String],
+    category: String,
+    explanation: String,
+    suggestion: String, 
+    similarityScore: Number,
     permanentGeneratedImageUrl: String,
     estimatedEmissions: {
       energyUsed: Number,

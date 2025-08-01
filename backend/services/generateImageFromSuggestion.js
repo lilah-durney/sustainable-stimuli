@@ -1,4 +1,3 @@
-import openai from "../utils/openAIClient.js";
 import uploadToGDrive from "../utils/uploadToGDrive.js";
 import axios from "axios";
 import Replicate from "replicate";
@@ -31,8 +30,6 @@ function describeVisualSimilarity(visualSimilarity) {
   }
 }
 
-
-
 export async function generateImageFromSuggestion(searchInput, suggestionText, emissions) {
   try {
     let originalConcept = "";
@@ -61,8 +58,6 @@ export async function generateImageFromSuggestion(searchInput, suggestionText, e
       clear functionality, structural elements, minimal shading, no color, no background, product sketch, industrial design, 
       isometric view, clean contour lines, cross-section, side view, top view`;
 
-    console.log("USER PROMPT:", prompt);
-
     //Generate from Replicate
     const output = await replicate.run(
       "black-forest-labs/flux-1.1-pro",
@@ -89,7 +84,7 @@ export async function generateImageFromSuggestion(searchInput, suggestionText, e
       buffer: Buffer.from(imageBuffer),
     };
 
-    //Try uploading to Google Drive, but don't fail if it breaks
+    //Try uploading to Google Drive
     let webViewLink = null;
     try {
       const uploadResult = await uploadToGDrive(fakeFile, "generated-sketches");
@@ -102,7 +97,7 @@ export async function generateImageFromSuggestion(searchInput, suggestionText, e
 
     return {
       replicateImageUrl,  // for immediate frontend display
-      webViewLink,          // to save to drive, if available
+      webViewLink,          // to save to drive
       emissions: addEmissions(emissions,imageGenEmissions)
     };
 

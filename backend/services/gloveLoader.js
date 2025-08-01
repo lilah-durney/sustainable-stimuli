@@ -1,7 +1,4 @@
 import fs from "fs/promises"
-import path from "path"
-
-
 
 const embeddings = new Map();
 
@@ -20,13 +17,8 @@ export async function loadGloveVectors(filePath) {
        }
    }
 
-
    console.log(`Loaded ${embeddings.size} word vectors`)
 }
-
-
-
-
 
 
 export function getVector(word) {

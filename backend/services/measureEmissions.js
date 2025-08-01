@@ -37,7 +37,7 @@ export function measureReplicateEmissions(numImages = 1) {
   return { energyWh: energy, emissionsGrams };
 }
 
-//Helper to sum two emissions objects
+
 export function addEmissions(e1, e2) {
   return {
     energyWh: (e1?.energyWh || 0) + (e2?.energyWh || 0),

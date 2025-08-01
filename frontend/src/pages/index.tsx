@@ -19,12 +19,12 @@ export default function Home() {
   });
 
     type Output = {
-      guideline: string, //for both
-      extractedWords: string[], //for structured
-      category: string, //for genAI only for now
-      explanation: string, //genAI
-      suggestion: string, //genAI
-      similarityScore: number, // for structured
+      guideline: string, 
+      extractedWords: string[], 
+      category: string,
+      explanation: string, 
+      suggestion: string, 
+      similarityScore: number,
       replicateImageUrl:  string,
       permanentGeneratedImageUrl: string,
       estimatedEmissions: {
@@ -32,17 +32,12 @@ export default function Home() {
         emissionsGrams: number;
   };
       
-
   };
 
   const [output, setOutput] = useState<Output | null>(null);
   const [loading, setLoading] = useState(false);
   const [hasSearched, setHasSearched] = useState(false);
   const [error, setError] = useState<string | null>(null);
-
-
-  
-
 
 
   const renderOutput = () => {
@@ -88,13 +83,7 @@ export default function Home() {
       };
 
 
-  
-
-
-  
   const handleSubmit = async () => {
-    console.log("Submitted")
-    
     setHasSearched(true);
     setOutput(null);
     setError(null)
@@ -109,22 +98,16 @@ export default function Home() {
       payload.append("sketchFile", formValues.sketchFile)
     }
 
-
     payload.append("semanticDistance", formValues.semanticDistance.toString())
     payload.append("visualSimilarity", formValues.visualSimilarity.toString())
     payload.append("conceptualSimilarity", formValues.conceptualSimilarity.toString())
     payload.append("searchType", formValues.searchType)
-
-    //TODO: if you let the user be able to select more than one goal, make sure to flatten it out (like you did for 
-    //the outputTypes below)
     payload.append("sustainableGoal", formValues.sustainableGoal)
     
     Object.entries(formValues.outputTypes).forEach(([key, value]) => {
     payload.append(`outputTypes[${key}]`, value.toString());
   });
    
-
-
 
     try {
       const response = await fetch("http://localhost:4000/api/suggestions/upload", {
@@ -158,9 +141,6 @@ export default function Home() {
           permanentGeneratedImageUrl: data.output.permanentGeneratedImageUrl,
           estimatedEmissions: data.output.estimatedEmissions, 
     });
-
-      console.log("Data from server: ", data);
-
     } catch (err: any) {
       console.error("Error submitting data", err);
       setError(err.message || "Something went wrong. Please try again.");
@@ -187,8 +167,6 @@ export default function Home() {
     }, [formValues]);
 
 
-  
-  
     return (
       <div className="flex flex-col md:flex-row w-full max-h-screen px-6 py-5 gap-10 bg-white " >
         
@@ -367,38 +345,12 @@ export default function Home() {
                   )}
                 </div>
               </div>
-
-
-
             </div>
           </div>
 
 
 
             <div className = "flex flex-col space-y-4 w-full">
-              {/* Sustainability Goals
-                <div>
-                  <h2 className="text-lg font-semibold mb-2 text-green-900">Sustainable Goals</h2>
-                  <div className="bg-[#628395] rounded-xl p-4 text-white w-full space-y-2">
-                    {["Materials", "Energy", "Usability"].map((goal) => (
-                      <label key={goal} className="flex items-center space-x-3">
-                        <input
-                          type="radio"
-                          name="sustainableGoal"
-                          value={goal}
-                          checked={formValues.sustainableGoal === goal}
-                          onChange={(e) =>
-                            setFormValues({ ...formValues, sustainableGoal: e.target.value })
-                          }
-                          className="w-5 h-5"
-                        />
-                        <span className="text-sm">{goal}</span>
-                      </label>
-                    ))}
-                  </div>
-                </div> */}
-
-                
                 <div className = "flex gap-4">
                   {/* Search Type */}
                   <div className="flex-1 relative">
@@ -481,21 +433,8 @@ export default function Home() {
                       })}
                     </div>
                   </div>
-
-
-
-
-
                   </div>
-                  
-
-
-
-
-              </div>
-              
-
-              
+              </div> 
             </div>
             {/* Search Button */}
             <div className="relative -top-8 pl-[85%]">
@@ -517,14 +456,7 @@ export default function Home() {
                 </div>
               )}
             </div>
-
-            
-            
           </div>
-
-          
-
-
         </div>
 
         
@@ -579,7 +511,6 @@ export default function Home() {
 
           </div>
         </div>
-
       </div>
     );
   }

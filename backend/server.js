@@ -11,9 +11,6 @@ import fs from "fs";
 import dotenv from "dotenv";
 dotenv.config();
 
-console.log("ENV loaded:", process.env.GOOGLE_APPLICATION_CREDENTIALS);
-
-
 const app = express();
 app.use(cors());
 app.use(express.json());
@@ -33,8 +30,6 @@ const guidelineMap = loadGuidelineVectors("data/guidelines.json");
 app.locals.loadGuidelineVectors = guidelineMap;
 
 
-
-
 app.use("/api/suggestions", suggestionRoutes);
 
 
@@ -44,15 +39,11 @@ const PORT = 4000;
 mongoose
  .connect(process.env.MONGODB_URI)
  .then(() => {
-   console.log("Connected to MongoDB");
    app.listen(PORT, () => {
      console.log(`Server running on http://localhost:${PORT}`);
    });
  })
  .catch(err => console.error("MongoDB connection error:", err));
-
-
-
 
  app.get("/", (req, res) => {
    res.send("API is running!")

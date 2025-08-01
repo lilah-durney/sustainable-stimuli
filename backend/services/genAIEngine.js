@@ -1,10 +1,11 @@
-//Prompt construction & OpenAI API call
-import fs from "fs";
 import openai from "../utils/openAIClient.js";
 import { measureOpenAIEmissions, measureStructuredEmissions, addEmissions } from "./measureEmissions.js";
 
 
 export async function processGenAI(searchInput, guidelineList, emissions) {
+  //Start time to calculate overhead emissions.
+  const start = process.hrtime()
+  
   const system_guidelines = `
         You are an assistant that helps designers apply sustainable design guidelines.
 
@@ -35,10 +36,6 @@ export async function processGenAI(searchInput, guidelineList, emissions) {
   const designBrief = searchInput.designBrief;
   const imageDescription = searchInput.imageDescription;
 
-  //Start time to calculate overhead structured emissions.
-  const start = process.hrtime()
-
-
   if (designBrief && imageDescription) {
     userInput = `Design brief: ${designBrief}\n\nSketch description: ${imageDescription}`;
   } else if (designBrief) {
@@ -48,8 +45,6 @@ export async function processGenAI(searchInput, guidelineList, emissions) {
   } else {
     throw new Error("User input is empty — must provide a design brief or upload a sketch.");
   }
-
-  console.log("User input:", userInput);
 
   let raw;
   try {
@@ -79,7 +74,6 @@ export async function processGenAI(searchInput, guidelineList, emissions) {
 
     const structuredEmissions = measureStructuredEmissions(start);
     const promptEmissions = measureOpenAIEmissions("gpt-4o", 1);
-
 
     return {
       guideline: parsed.guideline,

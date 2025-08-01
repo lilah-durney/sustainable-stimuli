@@ -1,5 +1,4 @@
 import { google } from "googleapis";
-import { readFileSync } from "fs";
 
 export async function getDriveClient() {
   const auth = new google.auth.GoogleAuth({
