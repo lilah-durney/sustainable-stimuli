@@ -2,6 +2,7 @@ import openai from "../utils/openAIClient.js";
 import uploadToGDrive from "../utils/uploadToGDrive.js";
 import axios from "axios";
 import Replicate from "replicate";
+import { measureReplicateEmissions, addEmissions } from "./measureEmissions.js";
 
 
 
@@ -32,7 +33,7 @@ function describeVisualSimilarity(visualSimilarity) {
 
 
 
-export async function generateImageFromSuggestion(searchInput, suggestionText) {
+export async function generateImageFromSuggestion(searchInput, suggestionText, emissions) {
   try {
     let originalConcept = "";
 
@@ -97,9 +98,12 @@ export async function generateImageFromSuggestion(searchInput, suggestionText) {
       console.warn("Failed to upload to Google Drive:", uploadErr.message || uploadErr);
     }
 
+    const imageGenEmissions = measureReplicateEmissions(1);
+
     return {
       replicateImageUrl,  // for immediate frontend display
-      webViewLink         // to save to drive, if available
+      webViewLink,          // to save to drive, if available
+      emissions: addEmissions(emissions,imageGenEmissions)
     };
 
   } catch (err) {

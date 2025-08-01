@@ -26,7 +26,12 @@ export default function Home() {
       suggestion: string, //genAI
       similarityScore: number, // for structured
       replicateImageUrl:  string,
-      permanentGeneratedImageUrl: string
+      permanentGeneratedImageUrl: string,
+      estimatedEmissions: {
+        energyWh: number;
+        emissionsGrams: number;
+  };
+      
 
   };
 
@@ -142,7 +147,18 @@ export default function Home() {
         }
 
       const data = await response.json();
-      setOutput({ ...data.output, replicateImageUrl: data.replicateImageUrl });
+      setOutput({
+          guideline: data.output.guideline,
+          extractedWords: data.output.extractedWords,
+          category: data.output.category,
+          explanation: data.output.explanation,
+          suggestion: data.output.suggestion,
+          similarityScore: data.output.similarityScore,
+          replicateImageUrl: data.replicateImageUrl,
+          permanentGeneratedImageUrl: data.output.permanentGeneratedImageUrl,
+          estimatedEmissions: data.output.estimatedEmissions, 
+    });
+
       console.log("Data from server: ", data);
 
     } catch (err: any) {
@@ -513,10 +529,16 @@ export default function Home() {
 
         
         {/* Right column content */}
-        
         <div className="shadow-md shadow-gray-400 bg-[#FFFAEE] border border-[#FFFAEE] pr-5 pl-5 p-4 rounded-xl flex flex-col w-full md:w-1/2 space-y-4">
-          <h2 className="text-lg font-semibold text-green-900 flex justify-end">Energy Usage</h2>
-          
+          {output && output.estimatedEmissions ? (
+            <div className="text-right text-sm text-gray-700">
+              <p><span className="font-semibold">Energy:</span> {output.estimatedEmissions.energyWh.toFixed(6)} Wh</p>
+              <p><span className="font-semibold">CO₂:</span> {output.estimatedEmissions.emissionsGrams.toFixed(6)} g</p>
+            </div>
+          ) : (
+            <div className="text-right text-sm text-gray-500">Submit to view energy usage</div>
+          )}
+
           {/* Text Output Area*/}
          <h2 className="text-lg font-bold text-green-900">Design Suggestion</h2>
           <div className="shadow-sm shadow-gray-400 bg-gray-200 border border-[#476C81] border-[6px] rounded-xl pl-4 pr-4 items-center justify-center text-gray-800 w-full h-64 flex ">

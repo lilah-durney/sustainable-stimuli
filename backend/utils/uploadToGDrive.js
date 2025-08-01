@@ -5,9 +5,9 @@ import { Readable } from "stream";
 
 
 //FolderIds for GDrive
-const DEFAULT_FALLBACK_FOLDER_ID = "1cgbHH7poEkRiTrDnP_ferQuzprWwKtHz";
-const UPLOADED_SKETCHES_FOLDER_ID = "1_402ihb29-Ccb5Zs100BQ9hRVV2vnZH_";
-const GENERATED_SKETCHES_FOLDER_ID = "1P2gw1LotcdBrs5Pr0dabXkae9rF0Z9pL";
+const DEFAULT_FALLBACK_FOLDER_ID = process.env.DEFAULT_FALLBACK_FOLDER_ID;
+const UPLOADED_SKETCHES_FOLDER_ID = process.env.UPLOADED_SKETCHES_FOLDER_ID;
+const GENERATED_SKETCHES_FOLDER_ID = process.env.GENERATED_SKETCHES_FOLDER_ID;
 
 export default async function uploadToGDrive(file, prefix) {
   if (!file.mimetype.startsWith("image/")) {
@@ -44,9 +44,9 @@ export default async function uploadToGDrive(file, prefix) {
   });
 
   //Permissions for who can view images directly through URL
-  const emails = ["ldurney@berkeley.edu", "goridkov@berkeley.edu","codesign-lab@berkeley.edu"];
+  const authorizedEmails = process.env.AUTHORIZED_EMAILS?.split(",") || [];
 
-  for (const email of emails) {
+  for (const email of authorizedEmails) {
     await drive.permissions.create({
       fileId: res.data.id,
       requestBody: {

@@ -41,18 +41,20 @@ router.post("/upload", upload.single("sketchFile"), async (req,res) => {
    
    let permanentUploadedImageUrl = null;
    let imageDescription = null;
+   let emissions = 0;
    
 
    if (req.file) {
     const { webViewLink } = await uploadToGDrive(req.file, "uploaded-sketches");
 
     //Use buffer directly to get image description
-    imageDescription = await convertImageToText(req.file.buffer);
+    const result =  await convertImageToText(req.file.buffer, emissions);
+    imageDescription = result.description
+    emissions = result.emissions;
 
     //Save permanent Google Drive link
     permanentUploadedImageUrl = webViewLink;
 
-    
    }
 
 
@@ -83,10 +85,21 @@ router.post("/upload", upload.single("sketchFile"), async (req,res) => {
    let replicateImageUrl = null;
    let processedOutput = {};
    if (searchType === "Structured") {
-     processedOutput = await processStructured(searchInput, guidelineVectors);
-   } else {
-      processedOutput = await processGenAI(searchInput, guidelineList);
+     const result = await processStructured(searchInput, guidelineVectors, emissions);
+     
+     processedOutput.guideline = result.guideline
+     processedOutput.extractedWords = result.extractedWords
+     emissions = result.emissions;
 
+   } else {
+      const result = await processGenAI(searchInput, guidelineList, emissions);
+
+      processedOutput.guideline = result.guideline;
+      processedOutput.category = result.category;
+      processedOutput.explanation = result.explanation;
+      processedOutput.suggestion = result.suggestion;
+
+      emissions = result.emissions;
   
       console.log("SEARCH INPUT NOW:", searchInput)
 
@@ -94,13 +107,25 @@ router.post("/upload", upload.single("sketchFile"), async (req,res) => {
     
       if (outputTypes.Image) {
           console.log("Going to generate image");
-          const result = await generateImageFromSuggestion(searchInput, processedOutput.suggestion);
+          const result = await generateImageFromSuggestion(searchInput, processedOutput.suggestion, emissions);
 
           replicateImageUrl = result.replicateImageUrl;
           processedOutput.permanentGeneratedImageUrl = result.webViewLink;
+          emissions = result.emissions;
 
       }
    }
+
+  processedOutput.estimatedEmissions = {
+    energyWh: emissions.energyWh,
+    emissionsGrams: emissions.emissionsGrams,
+  };
+
+
+
+  console.log(`Engine energy: ${emissions.energyWh.toFixed(6)} Wh`);
+  console.log(`Engine emissions: ${emissions.emissionsGrams.toFixed(6)} g CO₂`);
+
 
    //Updates output to database.
   searchInput.output = processedOutput;

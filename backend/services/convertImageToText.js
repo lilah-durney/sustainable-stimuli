@@ -1,6 +1,7 @@
 import openai from "../utils/openAIClient.js"
+import { measureOpenAIEmissions, addEmissions } from "./measureEmissions.js";
 
-export async function convertImageToText(buffer) {
+export async function convertImageToText(buffer, emissions) {
     const system_guidelines = `You are an assistant that helps designers apply sustainable design guidelines. 
         Given a sketch uploaded by the user, describe what is shown in the image. 
         Include key components, their arrangement, and the overall purpose or function of the design. 
@@ -27,11 +28,13 @@ export async function convertImageToText(buffer) {
         });
 
     const description = response.output_text;
-    console.log("Ddesc")
+    
     if (!description) {
         throw new Error("No content returned from OpenAI")
     }
-    return description;
+
+    const imageConversionEmissions = measureOpenAIEmissions("gpt-4.1-mini", 1);
+    return {description: description, emissions: addEmissions(emissions, imageConversionEmissions)};
 
     } catch(err) {
         console.error("Failed to convert image to text:", err)

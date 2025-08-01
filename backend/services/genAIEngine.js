@@ -1,8 +1,10 @@
 //Prompt construction & OpenAI API call
 import fs from "fs";
 import openai from "../utils/openAIClient.js";
+import { measureOpenAIEmissions, measureStructuredEmissions, addEmissions } from "./measureEmissions.js";
 
-export async function processGenAI(searchInput, guidelineList) {
+
+export async function processGenAI(searchInput, guidelineList, emissions) {
   const system_guidelines = `
         You are an assistant that helps designers apply sustainable design guidelines.
 
@@ -32,6 +34,10 @@ export async function processGenAI(searchInput, guidelineList) {
   let userInput = "";
   const designBrief = searchInput.designBrief;
   const imageDescription = searchInput.imageDescription;
+
+  //Start time to calculate overhead structured emissions.
+  const start = process.hrtime()
+
 
   if (designBrief && imageDescription) {
     userInput = `Design brief: ${designBrief}\n\nSketch description: ${imageDescription}`;
@@ -71,11 +77,16 @@ export async function processGenAI(searchInput, guidelineList) {
     const cleaned = raw.replace(/```json|```/g, "").trim();
     const parsed = JSON.parse(cleaned);
 
+    const structuredEmissions = measureStructuredEmissions(start);
+    const promptEmissions = measureOpenAIEmissions("gpt-4o", 1);
+
+
     return {
       guideline: parsed.guideline,
       category: parsed.category,
       explanation: parsed.explanation,
       suggestion: parsed.suggestion,
+      emissions: addEmissions(addEmissions(structuredEmissions, promptEmissions), emissions),
     };
   } catch (err) {
     console.error("Failed to parse GPT response:", raw);

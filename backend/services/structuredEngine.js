@@ -3,8 +3,7 @@ import keywordExtractor from "keyword-extractor";
 import { loadGloveVectors, getVector, hasVector } from "./gloveLoader.js";
 import fs from "fs";
 import { extractKeywords } from "../utils/extractKeywords.js";
-
-
+import { measureStructuredEmissions, addEmissions } from "./measureEmissions.js";
 
 
 
@@ -104,7 +103,10 @@ function fetchGuideline(promptVector, guidelineVectors, similarityPref) {
 
 
 
-export async function processStructured(searchInput, guidelineVectors) {
+export async function processStructured(searchInput, guidelineVectors, emissions) {
+  const start = process.hrtime();
+  
+  
   //Build the user message content based on whether or not they included sketch or text. 
 
   let promptKeywords = [];
@@ -136,7 +138,13 @@ export async function processStructured(searchInput, guidelineVectors) {
 
   const fetchedGuideline = fetchGuideline(promptVector, guidelineVectors, similiartyPref);
 
-  return({guideline: fetchedGuideline, extractedWords: promptKeywords})
+  const structuredEmissions = measureStructuredEmissions(start);
+
+  console.log(`Structured engine energy: ${structuredEmissions.energyWh.toFixed(6)} Wh`);
+  console.log(`Structured engine emissions: ${structuredEmissions.emissionsGrams.toFixed(6)} g CO₂`);
+
+
+  return({guideline: fetchedGuideline, extractedWords: promptKeywords, emissions: addEmissions(emissions, structuredEmissions)})
 
 }
 

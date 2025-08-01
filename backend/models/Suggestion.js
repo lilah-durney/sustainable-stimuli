@@ -5,7 +5,7 @@ const SuggestionSchema = new Schema({
   designBrief: { type: String }, // design brief from user
   permanentUploadedImageUrl: { type: String }, //optional 
   imageDescription: {type: String},
-  semanticDistance: { type: Number }, // might want to change this to a number scale instead (same for the similarities below)
+  semanticDistance: { type: Number }, 
   visualSimilarity: { type: Number},
   conceptualSimilarity: { type: Number},
   sustainableGoal: { type: String }, // sustainability goal
@@ -21,7 +21,12 @@ const SuggestionSchema = new Schema({
     explanation: String, //genAI
     suggestion: String, //genAI
     similarityScore: Number, // for structured
-    permanentGeneratedImageUrl: String
+    permanentGeneratedImageUrl: String,
+    estimatedEmissions: {
+      energyUsed: Number,
+      emissionsGrams: Number,
+
+    } ,
   },
   energyUsed: { type: Number },
   createdAt: { type: Date, default: Date.now },
