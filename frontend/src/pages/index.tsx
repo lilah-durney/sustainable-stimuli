@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Info } from 'lucide-react';
 import ClipLoader from "react-spinners/ClipLoader"
-
+import {getOrCreateSessionId} from "../../utils/sessions"
 
 export default function Home() {
   const [formValues, setFormValues] = useState({
@@ -27,17 +27,27 @@ export default function Home() {
       similarityScore: number,
       replicateImageUrl:  string,
       permanentGeneratedImageUrl: string,
-      estimatedEmissions: {
+      perQueryEmissions: {
         energyWh: number;
         emissionsGrams: number;
   };
+    
       
   };
+
+
 
   const [output, setOutput] = useState<Output | null>(null);
   const [loading, setLoading] = useState(false);
   const [hasSearched, setHasSearched] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [sessionTotals, setSessionTotals] = useState({
+    totalEnergyWh: 0,
+    totalEmissionsGrams: 0,
+
+  })
+  const [sessionId, setSessionId] = useState("");
+  const [showSessionTotals, setShowSessionTotals] = useState(true);
 
 
   const renderOutput = () => {
@@ -83,13 +93,41 @@ export default function Home() {
       };
 
 
+      useEffect(() => {
+        const id = getOrCreateSessionId();
+        setSessionId(id); 
+
+        const fetchSessionTotals = async (retries = 4) => {
+            try {
+              const res = await fetch(`http://localhost:4000/api/suggestions/session-summary?sessionId=${id}`);
+              const data = await res.json();
+              setSessionTotals(data);
+            } catch (err) {
+              if (retries > 0) {
+                console.warn("Retrying fetchSessionTotals…", retries);
+                setTimeout(() => fetchSessionTotals(retries - 1), 1000);
+              } else {
+                console.error("Failed to fetch session totals after retries", err);
+              }
+            }
+        };
+        fetchSessionTotals();
+        }, []);
+
+
+
+
   const handleSubmit = async () => {
     setHasSearched(true);
     setOutput(null);
     setError(null)
     setLoading(true);
 
+
     const payload = new FormData();
+    payload.append("sessionId", sessionId);
+
+
     if (formValues.designBrief) {
        payload.append("designBrief", formValues.designBrief)
     }
@@ -139,14 +177,20 @@ export default function Home() {
           similarityScore: data.output.similarityScore,
           replicateImageUrl: data.replicateImageUrl,
           permanentGeneratedImageUrl: data.output.permanentGeneratedImageUrl,
-          estimatedEmissions: data.output.estimatedEmissions, 
+          perQueryEmissions: data.output.perQueryEmissions, 
     });
+
+    setSessionTotals(data.sessionTotals);
+
     } catch (err: any) {
       console.error("Error submitting data", err);
       setError(err.message || "Something went wrong. Please try again.");
     } finally {
       setLoading(false);
     }
+
+
+
 
     };
   
@@ -461,15 +505,46 @@ export default function Home() {
 
         
         {/* Right column content */}
+
         <div className="shadow-md shadow-gray-400 bg-[#FFFAEE] border border-[#FFFAEE] pr-5 pl-5 p-4 rounded-xl flex flex-col w-full md:w-1/2 space-y-4">
-          {output && output.estimatedEmissions ? (
-            <div className="text-right text-sm text-gray-700">
-              <p><span className="font-semibold">Energy:</span> {output.estimatedEmissions.energyWh.toFixed(6)} Wh</p>
-              <p><span className="font-semibold">CO₂:</span> {output.estimatedEmissions.emissionsGrams.toFixed(6)} g</p>
+             <div className = "flex justify-between">
+             <div className="flex items-center mb-2">
+              <div className="flex items-center bg-gray-300 rounded-full p-1">
+                <button
+                  className={`px-3 py-1 text-sm rounded-full transition ${
+                    showSessionTotals ? "bg-white text-green-900 font-semibold" : "text-gray-600"
+                  }`}
+                  onClick={() => setShowSessionTotals(true)}
+                >
+                  Session Totals
+                </button>
+                <button
+                  className={`px-3 py-1 text-sm rounded-full transition ${
+                    !showSessionTotals ? "bg-white text-green-900 font-semibold" : "text-gray-600"
+                  }`}
+                  onClick={() => setShowSessionTotals(false)}
+                >
+                  Per-Query
+                </button>
+              </div>
             </div>
-          ) : (
-            <div className="text-right text-sm text-gray-500">Submit to view energy usage</div>
-          )}
+          {showSessionTotals ? (
+              <div className="text-right text-sm text-gray-700">
+                <p><span className="font-semibold">Total Energy:</span> {sessionTotals.totalEnergyWh.toFixed(6)} Wh</p>
+                <p><span className="font-semibold">Total CO₂:</span> {sessionTotals.totalEmissionsGrams.toFixed(6)} g</p>
+              </div>
+            ) : (
+              output && output.perQueryEmissions ? (
+                <div className="text-right text-sm text-gray-700">
+                  <p><span className="font-semibold">Energy:</span> {output.perQueryEmissions.energyWh.toFixed(6)} Wh</p>
+                  <p><span className="font-semibold">CO₂:</span> {output.perQueryEmissions.emissionsGrams.toFixed(6)} g</p>
+                </div>
+              ) : (
+                <div className="text-right text-sm text-gray-500">Submit to view energy usage</div>
+              )
+            )}
+          </div>
+
 
           {/* Text Output Area*/}
          <h2 className="text-lg font-bold text-green-900">Design Suggestion</h2>

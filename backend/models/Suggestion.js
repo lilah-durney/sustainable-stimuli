@@ -2,6 +2,7 @@ import mongoose from "mongoose";
 const { Schema, models } = mongoose;
 
 const SuggestionSchema = new Schema({
+  sessionId: {type: String},
   designBrief: { type: String },
   permanentUploadedImageUrl: { type: String }, 
   imageDescription: {type: String},
@@ -22,13 +23,12 @@ const SuggestionSchema = new Schema({
     suggestion: String, 
     similarityScore: Number,
     permanentGeneratedImageUrl: String,
-    estimatedEmissions: {
-      energyUsed: Number,
+    perQueryEmissions: {
+      energyWh: Number,
       emissionsGrams: Number,
 
     } ,
   },
-  energyUsed: { type: Number },
   createdAt: { type: Date, default: Date.now },
 });
 

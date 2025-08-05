@@ -98,7 +98,7 @@ export async function generateImageFromSuggestion(searchInput, suggestionText, e
     return {
       replicateImageUrl,  // for immediate frontend display
       webViewLink,          // to save to drive
-      emissions: addEmissions(emissions,imageGenEmissions)
+      emissions: addEmissions(emissions, imageGenEmissions)
     };
 
   } catch (err) {
